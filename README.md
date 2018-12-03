@@ -1,5 +1,5 @@
 # R Package - CloneHunter
-This is a wrapped package of the above workflow with additional checks on the Celltag Library sequences. This package have a dependency on R version (R >= 3.5.1). This can be used as an alternative approach for this pipeline.
+This is a wrapped package of the above workflow with additional checks on the Celltag Library sequences. This package have a dependency on R version (R >= 3.5.0). This can be used as an alternative approach for this pipeline.
 
 (You might need to install devtools to be able to install from Github first)
 ```r
@@ -64,7 +64,7 @@ rownames(sc.celltag) <- rnm
 ```
 
 ### 2. Binarize the single-cell CellTag UMI count matrix
-Here we would like to binarize the count matrix to contain 0 or 1, where 0 indicates no such CellTag found in a single cell and 1 suggests the existence of such CellTag. The suggested cutoff that marks existence or absence is at least 2 counts per CellTag per Cell. For details, please refer to the paper - <<<<<<<<<<<<<<<<<<<<<<<<<<<LINK>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Here we would like to binarize the count matrix to contain 0 or 1, where 0 indicates no such CellTag found in a single cell and 1 suggests the existence of such CellTag. The suggested cutoff that marks existence or absence is at least 2 counts per CellTag per Cell. For details, please refer to the paper - _PAPER REFERENCE_
 ```r
 # Calling binarization
 binary.sc.celltag <- SingleCellDataBinarization(sc.celltag, 2)

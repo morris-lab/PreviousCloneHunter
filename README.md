@@ -8,7 +8,7 @@ install.packages("devtools")
 Install the package from GitHub.
 ```r
 library("devtools")
-devtools::install_github("morris-lab/CloneHunter", subdir = "CloneHunter")
+devtools::install_github("morris-lab/CloneHunter")
 ```
 ## Assessment of CellTag Library Complexity via Sequencing
 In the first section, we would like to evaluate the CellTag library complexity using sequencing. Following is an example using the sequencing data we generated in lab for pooled CellTag library V2. 

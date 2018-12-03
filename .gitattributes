@@ -1,0 +1,2 @@
+*.psd filter=lfs diff=lfs merge=lfs -text
+inst/extdata/V2-1_S2_L001_R1_001.fastq filter=lfs diff=lfs merge=lfs -text

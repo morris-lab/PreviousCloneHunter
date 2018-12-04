@@ -122,10 +122,25 @@ print(paste0("Mean CellTag Frequency across Cells: ", metric.p3[[2]]))
 ```
 If it looks good, proceed to the following steps to carry out clone calling via Jaccard analysis and hierarchical clustering.
 ### 8. Jaccard Analysis
-This calculates pairwise Jaccard similarities among cells using the filtered CellTag UMI count matrix. This will generate a Jaccard similarity matrix and plot a correlation heatmap with cells ordered by hierarchical clustering. 
+This calculates pairwise Jaccard similarities among cells using the filtered CellTag UMI count matrix. This will generate a Jaccard similarity matrix and plot a correlation heatmap with cells ordered by hierarchical clustering. The matrix and plot will be saved in the current working directory.
 ```r
 jac.mtx <- JaccardAnalysis(whitelisted.celltag.data = metric.filter.sc.data.2)
 ```
 ### 9. Clone Calling
-This 
+Based on the Jaccard similarity matrix, we can call clones of cells. A clone will be selected if the correlations inside of the clones passes the cutoff given (here, 0.7 is used. It can be changed based on the heatmap/correlation matrix generated above). Using this part, a list containing the clonal identities of all cells and the count information for each clone. The tables will be saved in the given directory and filename.
+
+##### Clonal Identity Table `result[[1]]`
+
+|clone.id|cell.barcode|
+|:-------:|:------:|
+|Clonal ID|Cell BC |
+
+##### Count Table `result[[2]]`
+|Clone.ID|Frequency|
+|:------:|:-------:|
+|Clonal ID|The cell number in the clone|
+
+```r
+Clone.result <- CloneCalling(Jaccard.Matrix = jac.mtx, output.dir = "./", output.filename = "clone_calling_result.csv", correlation.cutoff = 0.7)
+```
 

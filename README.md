@@ -122,9 +122,10 @@ print(paste0("Mean CellTag Frequency across Cells: ", metric.p3[[2]]))
 ```
 If it looks good, proceed to the following steps to carry out clone calling via Jaccard analysis and hierarchical clustering.
 ### 8. Jaccard Analysis
-
+This calculates pairwise Jaccard similarities among cells using the filtered CellTag UMI count matrix. This will generate a Jaccard similarity matrix and plot a correlation heatmap with cells ordered by hierarchical clustering. 
 ```r
 jac.mtx <- JaccardAnalysis(whitelisted.celltag.data = metric.filter.sc.data.2)
 ```
-
+### 9. Clone Calling
+This 
 

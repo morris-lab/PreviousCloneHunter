@@ -84,13 +84,23 @@ print(paste0("Mean CellTag Frequency across Cells: ", metric.p[[2]]))
 Based on the whitelist generated earlier, we filter the UMI count matrix to contain only whitelisted CelTags.
 ```r
 whitelist.sc.data.v2 <- SingleCellDataWhitelist(binary.sc.celltag, whitels.cell.tag.file = "./my_favourite_v2_1.csv")
+```
+For all three CellTags,
+```r
 ##########
 # Only run if this sample has been tagged with more than 1 CellTags libraries
 ##########
 ## NOT RUN
 whitelist.sc.data.v1 <- SingleCellDataWhitelist(binary.sc.celltag, whitels.cell.tag.file = "./my_favourite_v1.csv")
+whitelist.sc.data.v2 <- SingleCellDataWhitelist(binary.sc.celltag, whitels.cell.tag.file = "./my_favourite_v2_1.csv")
 whitelist.sc.data.v3 <- SingleCellDataWhitelist(binary.sc.celltag, whitels.cell.tag.file = "./my_favourite_v3.csv")
-# Concatenate the colnames with celltag versions
-colnames(whitelist.sc.data.v1) <- paste("V1_", colnames(whitelist.sc.data.v1), sep = "")
-colnames(whitelist.sc.data.v3) <- paste("V3_", colnames(whitelist.sc.data.v3), sep = "")
 ```
+### 5. Check metric plots after whitelist filtering
+Recheck the metric as similar as Step 3
+```r
+metric.p2 <- MetricPlots(celltag.data = whitelist.sc.data.v2)
+print(paste0("Mean CellTags Per Cell: ", metric.p2[[1]]))
+print(paste0("Mean CellTag Frequency across Cells: ", metric.p2[[2]]))
+```
+
+

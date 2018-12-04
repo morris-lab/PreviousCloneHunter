@@ -95,12 +95,36 @@ whitelist.sc.data.v1 <- SingleCellDataWhitelist(binary.sc.celltag, whitels.cell.
 whitelist.sc.data.v2 <- SingleCellDataWhitelist(binary.sc.celltag, whitels.cell.tag.file = "./my_favourite_v2_1.csv")
 whitelist.sc.data.v3 <- SingleCellDataWhitelist(binary.sc.celltag, whitels.cell.tag.file = "./my_favourite_v3.csv")
 ```
+For each version of CellTag library, it should be processed through the following steps one by one to call clones for different pooled CellTag library.
+
 ### 5. Check metric plots after whitelist filtering
 Recheck the metric as similar as Step 3
 ```r
 metric.p2 <- MetricPlots(celltag.data = whitelist.sc.data.v2)
 print(paste0("Mean CellTags Per Cell: ", metric.p2[[1]]))
 print(paste0("Mean CellTag Frequency across Cells: ", metric.p2[[2]]))
+```
+
+### 6. Additional filtering
+#### Filter out cells with more than 20 CellTags
+```r
+metric.filter.sc.data <- MetricBasedFiltering(whitelisted.celltag.data = whitelist.sc.data.v2, cutoff = 20, comparison = "less")
+```
+#### Filter out cells with less than 2 CellTags
+```r
+metric.filter.sc.data.2 <- MetricBasedFiltering(whitelisted.celltag.data = whitelist.sc.data.v2, cutoff = 2, comparison = "greater")
+```
+### 7. Last check of metric plots
+```r
+metric.p3 <- MetricPlots(celltag.data = metric.filter.sc.data.2)
+print(paste0("Mean CellTags Per Cell: ", metric.p3[[1]]))
+print(paste0("Mean CellTag Frequency across Cells: ", metric.p3[[2]]))
+```
+If it looks good, proceed to the following steps to carry out clone calling via Jaccard analysis and hierarchical clustering.
+### 8. Jaccard Analysis
+
+```r
+jac.mtx <- JaccardAnalysis(whitelisted.celltag.data = metric.filter.sc.data.2)
 ```
 
 

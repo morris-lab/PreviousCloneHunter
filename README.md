@@ -64,7 +64,7 @@ rownames(sc.celltag) <- rnm
 ```
 
 ### 2. Binarize the single-cell CellTag UMI count matrix
-Here we would like to binarize the count matrix to contain 0 or 1, where 0 indicates no such CellTag found in a single cell and 1 suggests the existence of such CellTag. The suggested cutoff that marks existence or absence is at least 2 counts per CellTag per Cell. For details, please refer to the paper - _PAPER REFERENCE_
+Here we would like to binarize the count matrix to contain 0 or 1, where 0 indicates no such CellTag found in a single cell and 1 suggests the existence of such CellTag. The suggested cutoff that marks existence or absence is at least 2 counts per CellTag per Cell. For details, please refer to the paper - https://www.nature.com/articles/s41586-018-0744-4
 ```r
 # Calling binarization
 binary.sc.celltag <- SingleCellDataBinarization(sc.celltag, 2)

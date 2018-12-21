@@ -86,14 +86,7 @@ ct.mtx <- CellTagMatrixCount("barcodes.tsv", "./hf1.d15.possorted.celltag.tsv")
 
 The generated CellTag UMI count matrices can then be used in the following steps for clone identification.
 
-## CellTag Error Correction
-In this step, we will identify CellTags with similar sequences and collapse similar CellTags to the centroid CellTag. For more information, please refer to starcode software - https://github.com/gui11aume/starcode. Briefly, starcode clusters DNA sequences based on the Levenshtein distances between each pair of sequences, from which we collapse similar CellTag sequences to correct for potential errors occurred during single-cell RNA-sequencing process. 
-
-### 1. Prepare for the data to be collapsed
-### 2. Run Starcode to cluster the CellTag
-### 3. Extract information from Starcode result and collapse similar CellTags
-
-## Clone Calling
+## Single-cell CellTag UMI Count Matrix Processing
 In this section, we are presenting an alternative approach that utilizes this package that we established to carry out clone calling with single-cell CellTag UMI count matrices. In this pipeline below, we are using a subset dataset generated from the full data (Full data can be found here: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE99915). Briefly, in our lab, we reprogram mouse embryonic fibroblasts (MEFs) to induced endoderm progenitors (iEPs). This dataset is a single-cell dataset that contains cells collected from different time points during the process. This subset is a part of the first replicate of the data. It contains cells collected at Day 28 with three different CellTag libraries - V1, V2 & V3. 
 
 ### 1. Read in the single-cell CellTag UMI count matrix
@@ -165,13 +158,23 @@ metric.p3 <- MetricPlots(celltag.data = metric.filter.sc.data.2)
 print(paste0("Mean CellTags Per Cell: ", metric.p3[[1]]))
 print(paste0("Mean CellTag Frequency across Cells: ", metric.p3[[2]]))
 ```
-If it looks good, proceed to the following steps to carry out clone calling via Jaccard analysis and hierarchical clustering.
-### 8. Jaccard Analysis
+If it looks good, proceed to the following steps to carry out CellTag error correction.
+
+## CellTag Error Correction
+In this step, we will identify CellTags with similar sequences and collapse similar CellTags to the centroid CellTag. For more information, please refer to starcode software - https://github.com/gui11aume/starcode. Briefly, starcode clusters DNA sequences based on the Levenshtein distances between each pair of sequences, from which we collapse similar CellTag sequences to correct for potential errors occurred during single-cell RNA-sequencing process. Default maximum distance from starcode was used to cluster the CellTags.
+
+### 1. Prepare for the data to be collapsed
+
+### 2. Run Starcode to cluster the CellTag
+### 3. Extract information from Starcode result and collapse similar CellTags
+
+## Clone Calling
+### 1. Jaccard Analysis
 This calculates pairwise Jaccard similarities among cells using the filtered CellTag UMI count matrix. This will generate a Jaccard similarity matrix and plot a correlation heatmap with cells ordered by hierarchical clustering. The matrix and plot will be saved in the current working directory.
 ```r
 jac.mtx <- JaccardAnalysis(whitelisted.celltag.data = metric.filter.sc.data.2)
 ```
-### 9. Clone Calling
+### 2. Clone Calling
 Based on the Jaccard similarity matrix, we can call clones of cells. A clone will be selected if the correlations inside of the clones passes the cutoff given (here, 0.7 is used. It can be changed based on the heatmap/correlation matrix generated above). Using this part, a list containing the clonal identities of all cells and the count information for each clone. The tables will be saved in the given directory and filename.
 
 ##### Clonal Identity Table `result[[1]]`

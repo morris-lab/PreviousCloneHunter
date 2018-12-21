@@ -9,7 +9,7 @@ CellTagMatrixCount(barcodes.file, celltag.read.data.file)
 \arguments{
 \item{barcodes.file}{A .tsv output file from 10x CellRanger pipeline. It contains a list of all cell barcodes identified in the filtered dataset.}
 
-\item{celltag.read.data.file}{A .tsv output file that contains information about the parsed CellTag read data}
+\item{celltag.read.data.file}{A .tsv output file that contains information about the parsed Cell barcode, UMI, CellTag data}
 }
 \value{
 Cell Barcodes x CellTag matrix
@@ -18,7 +18,7 @@ Cell Barcodes x CellTag matrix
 This function uses the extract information from data processed before and generate a Cell Barcode x CellTag matrix
 }
 \examples{
-("data.fastq", "v1", "~/Desktop/whitelist.txt")
+CellTagMatrixCount("barcodes.tsv", "D0_V1_tag_info.tsv")
 
 }
 \keyword{CellTagging}

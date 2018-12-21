@@ -24,7 +24,7 @@ CellTagExtraction(fastq.bam.input, celltag.version,
 A list contains count table of CellTags. If requested to save fullTag counts, i.e. save.fullTag.counts = TRUE, return a list of both 8nt tags and full sequences count. Otherwise, a list of 8nt tags counts.
 }
 \description{
-This function extracts CellTags from the raw fastq sequencing file, provides counts of each CellTag and sorts them in desending order.
+This function extracts CellTags from the raw fastq/bam sequencing file. If it is a fastq file, provides counts of each CellTag and sorts them in desending order. If it is a bam file, returns the barcode, umi, celltag information.
 }
 \examples{
 CellTagExtraction("data.fastq", "v1", "~/Desktop/whitelist.txt")

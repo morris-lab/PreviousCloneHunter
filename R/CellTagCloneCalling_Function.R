@@ -46,7 +46,7 @@ SingleCellDataWhitelist <- function(celltag.dat, whitels.cell.tag.file) {
   if (endsWith(whitels.cell.tag.file, ".csv")) {
     separator <- ","
   } else {
-    if (endsWith(whitels.cell.tag.file, ".txt") | endsWith(whitelisted.cell.tag, ".tsv")) {
+    if (endsWith(whitels.cell.tag.file, ".txt") | endsWith(whitels.cell.tag.file, ".tsv")) {
       separator <- "\t"
     } else {
       separator <- " "

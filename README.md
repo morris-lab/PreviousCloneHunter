@@ -176,6 +176,10 @@ Following the instruction for Starcode, we will run the following command to gen
 ```
 
 ### 3. Extract information from Starcode result and collapse similar CellTags
+With the collapsed results, we will regenerate the CellTag x Cell Barcode matrix. The output will be a matrix that contain the combined counts and collapsed CellTags. Also, the output will be saved under the output file directory given.
+```r
+collapsed.mtx <- CellTagDataPostCollapsing(metric.filter.sc.data.2, "./collapsing_result.txt", "./my_favoriate.csv", "./collapsed_matrix.RDS")
+```
 
 ## Clone Calling
 ### 1. Jaccard Analysis

@@ -21,10 +21,14 @@ In the first section, we would like to evaluate the CellTag library complexity u
 #### Note: This function is still under construction for extension to accept BAM file as input file. Currently it only works with FASTQ files.
 ```r
 # Read in data file that come with the package
-fpath <- system.file("extdata", "V2-1_S2_L001_R1_001.fastq", package = "CloneHunter")
+fpath <- system.file("extdata", "V2-1_R1.zip", package = "CloneHunter")
+extract.dir <- "."
+# Extract the dataset
+unzip(fpath, overwrite = FALSE, exdir = ".")
+full.fpath <- paste0(extract.dir, "/", "V2-1_S2_L001_R1_001.fastq")
 output.path <- "./celltag_extracted_v2-1_r1.txt"
 # Extract the CellTags
-extracted.cell.tags <- CellTagExtraction(fastq.bam.input = fpath, celltag.version = "v2", extraction.output.filename = output.path, save.fullTag = FALSE, save.onlyTag = FALSE)
+extracted.cell.tags <- CellTagExtraction(fastq.bam.input = full.fpath, celltag.version = "v2", extraction.output.filename = output.path, save.fullTag = FALSE, save.onlyTag = FALSE)
 ```
 The extracted CellTag - `extracted.cell.tags` variable - contains a list of two vectors as following.
 

@@ -52,6 +52,10 @@ whitelisted.cell.tag <- CellTagWhitelistFiltering(count.sorted.table = cell.tag.
 ```
 The generated whitelist for each library can be used to filter and clean the single-cell CellTag UMI matrices.
 
+## Single-Cell CellTag Extraction and Quantification
+In this section, we are presenting an alternative approach that utilizes this package to carry out CellTag extraction, quantification, and generation of UMI count matrices. This can be also accomplished via the workflow supplied - https://github.com/morris-lab/CellTagWorkflow. 
+#### Note: Using the package could be slow for the extraction part. For reference, it took approximately an hour to process a 40Gb BAM file using a maximum of 8Gb of memory.
+
 ## Clone Calling
 In this section, we are presenting an alternative approach that utilizes this package that we established to carry out clone calling with single-cell CellTag UMI count matrices. In this pipeline below, we are using a subset dataset generated from the full data (Full data can be found here: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE99915). Briefly, in our lab, we reprogram mouse embryonic fibroblasts (MEFs) to induced endoderm progenitors (iEPs). This dataset is a single-cell dataset that contains cells collected from different time points during the process. This subset is a part of the first replicate of the data. It contains cells collected at Day 28 with three different CellTag libraries - V1, V2 & V3. 
 

@@ -164,8 +164,17 @@ If it looks good, proceed to the following steps to carry out CellTag error corr
 In this step, we will identify CellTags with similar sequences and collapse similar CellTags to the centroid CellTag. For more information, please refer to starcode software - https://github.com/gui11aume/starcode. Briefly, starcode clusters DNA sequences based on the Levenshtein distances between each pair of sequences, from which we collapse similar CellTag sequences to correct for potential errors occurred during single-cell RNA-sequencing process. Default maximum distance from starcode was used to cluster the CellTags.
 
 ### 1. Prepare for the data to be collapsed
+First, we will prepare the data to the format that could be accepted by starcode. This function accepts three inputs including the whitelist filtered single-cell data from the previous section, the single-cell full UMI count matrix and the output csv file to save to. The output will be a data frame containing the CellTag information with their corresponding cell barcode and UMI counts. In this function, we concatenate the CellTag with cell barcode and use the combined sequences as input to execute Starcode. The file to be used for Starcode will be stored under the same directory as the output file and with the name provided and the suffix of "collapse.txt".
+```r
+collapse.df <- CellTagDataForCollapsing(metric.filter.sc.data.2, sc.celltag, "./my_favoriate.csv")
+```
 
 ### 2. Run Starcode to cluster the CellTag
+Following the instruction as in starcode - https://github.com/gui11aume/starcode, we run the following command to generate the result from starcode.
+```r
+./starcode -s --print-clusters ./my_favoriate_collapse.txt > ./collasing_result.txt
+```
+
 ### 3. Extract information from Starcode result and collapse similar CellTags
 
 ## Clone Calling

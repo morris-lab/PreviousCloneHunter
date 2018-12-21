@@ -65,6 +65,7 @@ wget https://sra-download.ncbi.nlm.nih.gov/traces/sra65/SRZ/007347/SRR7347033/hf
 
 ### 2. Extract the CellTags from BAM file
 In this step, we will extract the CellTag information from the BAM file, which contains information including cell barcodes, CellTag and Unique Molecular Identifiers (UMI). The result generated from this extraction will be a data table containing the following information. The result will then be saved into a tab-delimited table on the directory given.
+
 |Cell Barcode|Unique Molecular Identifier|CellTag Motif|
 |:----------:|:-:|:---------:|
 |Cell.BC|UMI|Cell.Tag|
@@ -74,6 +75,7 @@ extracted.cell.tags.bam <- CellTagExtraction(fastq.bam.input="./hf1.d15.possorte
 
 ### 3. Quantify the CellTag UMI Counts and Generate UMI Count Matrices
 In this step, we will quantify the CellTag UMI counts and generate the UMI count matrices. The result will contain the final matrix with the following information. The result will also be saved under the same directory as where the tab-delimited table was generated in Step 2.
+
 |Cell Barcode|<CellTag Motif 1>|<CellTag Motif 2>|...|<CellTag Motif N>|
 |:----------:|:-:|:---------:|:--:|
 |Cell.BC|<Motif 1>|<Motif 2>|<...>|<Motif N>|

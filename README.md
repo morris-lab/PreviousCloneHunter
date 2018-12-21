@@ -76,9 +76,9 @@ extracted.cell.tags.bam <- CellTagExtraction(fastq.bam.input="./hf1.d15.possorte
 ### 3. Quantify the CellTag UMI Counts and Generate UMI Count Matrices
 In this step, we will quantify the CellTag UMI counts and generate the UMI count matrices. The result will contain the final matrix with the following information. The result will also be saved under the same directory as where the tab-delimited table was generated in Step 2.
 
-|Cell Barcode|CellTag Motif 1|CellTag Motif 2|<all tags detected>|CellTag Motif N|
+|Cell Barcode|CellTag Motif 1|CellTag Motif 2|\<all tags detected\>|CellTag Motif N|
 |:----------:|:-:|:---------:|:--:|
-|Cell.BC|Motif 1|Motif 2|<all tags detected>|Motif N
+|Cell.BC|Motif 1|Motif 2|\<all tags detected\>|Motif N
 
 ## Clone Calling
 In this section, we are presenting an alternative approach that utilizes this package that we established to carry out clone calling with single-cell CellTag UMI count matrices. In this pipeline below, we are using a subset dataset generated from the full data (Full data can be found here: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE99915). Briefly, in our lab, we reprogram mouse embryonic fibroblasts (MEFs) to induced endoderm progenitors (iEPs). This dataset is a single-cell dataset that contains cells collected from different time points during the process. This subset is a part of the first replicate of the data. It contains cells collected at Day 28 with three different CellTag libraries - V1, V2 & V3. 

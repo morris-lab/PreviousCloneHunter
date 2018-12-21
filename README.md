@@ -170,9 +170,9 @@ collapse.df <- CellTagDataForCollapsing(metric.filter.sc.data.2, sc.celltag, "./
 ```
 
 ### 2. Run Starcode to cluster the CellTag
-Following the instruction as in starcode - https://github.com/gui11aume/starcode, we run the following command to generate the result from starcode.
+Following the instruction for Starcode, we will run the following command to generate the result from starcode.
 ```r
-./starcode -s --print-clusters ./my_favoriate_collapse.txt > ./collasing_result.txt
+./starcode -s --print-clusters ./my_favoriate_collapse.txt > ./collapsing_result.txt
 ```
 
 ### 3. Extract information from Starcode result and collapse similar CellTags

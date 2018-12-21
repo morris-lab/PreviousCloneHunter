@@ -86,6 +86,13 @@ ct.mtx <- CellTagMatrixCount("barcodes.tsv", "./hf1.d15.possorted.celltag.tsv")
 
 The generated CellTag UMI count matrices can then be used in the following steps for clone identification.
 
+## CellTag Error Correction
+In this step, we will identify CellTags with similar sequences and collapse similar CellTags to the centroid CellTag. For more information, please refer to starcode software - https://github.com/gui11aume/starcode. Briefly, starcode clusters DNA sequences based on the Levenshtein distances between each pair of sequences, from which we collapse similar CellTag sequences to correct for potential errors occurred during single-cell RNA-sequencing process. 
+
+### 1. Prepare for the data to be collapsed
+### 2. Run Starcode to cluster the CellTag
+### 3. Extract information from Starcode result and collapse similar CellTags
+
 ## Clone Calling
 In this section, we are presenting an alternative approach that utilizes this package that we established to carry out clone calling with single-cell CellTag UMI count matrices. In this pipeline below, we are using a subset dataset generated from the full data (Full data can be found here: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE99915). Briefly, in our lab, we reprogram mouse embryonic fibroblasts (MEFs) to induced endoderm progenitors (iEPs). This dataset is a single-cell dataset that contains cells collected from different time points during the process. This subset is a part of the first replicate of the data. It contains cells collected at Day 28 with three different CellTag libraries - V1, V2 & V3. 
 

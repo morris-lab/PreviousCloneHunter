@@ -26,6 +26,7 @@ extract.dir <- "."
 # Extract the dataset
 unzip(fpath, overwrite = FALSE, exdir = ".")
 full.fpath <- paste0(extract.dir, "/", "V2-1_S2_L001_R1_001.fastq")
+# Set up output file directory
 output.path <- "./celltag_extracted_v2-1_r1.txt"
 # Extract the CellTags
 extracted.cell.tags <- CellTagExtraction(fastq.bam.input = full.fpath, celltag.version = "v2", extraction.output.filename = output.path, save.fullTag = FALSE, save.onlyTag = FALSE)

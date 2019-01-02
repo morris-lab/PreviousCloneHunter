@@ -48,7 +48,7 @@ colnames(cell.tag.count.sort) <- c("CellTag", "Count")
 ### 3. Generation of whitelist for this CellTag library
 Here are are generating the whitelist for this CellTag library - CellTag V2. This will remove the CellTags with an occurrence number below the threshold. The threshold (using 90th percentile as an example) is determined: floor[(90th quantile)/10]. The percentile can be changed while calling the function. Occurrence scatter plots are saved under the `output.dir`, which could be further used to determine the percentile for each different CellTag library.
 ```r
-whitelisted.cell.tag <- CellTagWhitelistFiltering(count.sorted.table = cell.tag.count.sort, percentile = 0.9, output.dir="./", output.file = "my_favourite_v1.csv", save.output = TRUE)
+whitelisted.cell.tag <- CellTagWhitelistFiltering(count.sorted.table = cell.tag.count.sort, percentile = 0.9, output.dir="./", output.count.file = "my_favourite_v1.csv", save.output = TRUE)
 ```
 The generated whitelist for each library can be used to filter and clean the single-cell CellTag UMI matrices.
 

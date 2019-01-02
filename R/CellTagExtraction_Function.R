@@ -214,7 +214,7 @@ bam.process <- function(bam.file, pattern, short.nt.before.tag, short.nt.after.t
   while(TRUE) {
     curr.read <- scanBam(bamFile, param = parameters)[[1]]
     print(count)
-    if (length(curr.read$qname) == 0) {
+    if (length(curr.read$qname) <= 0) {
       break
     } else {
       # Read in all information
@@ -226,22 +226,24 @@ bam.process <- function(bam.file, pattern, short.nt.before.tag, short.nt.after.t
         curr.cell.bc <- curr.read$tag$CB
         curr.umi <- curr.read$tag$UB
         curr.cell.tag <- rep(NA, length(curr.read$qname))
-        # Initialize the current data table
-        curr.df <- data.table(Cell.BC = curr.cell.bc, UMI = curr.umi, Cell.Tag = curr.cell.tag)
+        if (!(is.null(curr.cell.bc) | is.null(curr.umi))) {
+          # Initialize the current data table
+          curr.df <- data.table(Cell.BC = curr.cell.bc, UMI = curr.umi, Cell.Tag = curr.cell.tag)
         
-        curr.f.seq <- curr.seqs[contain.idx]
-        start.loc <- reg.rslt[contain.idx]
-        end.loc <- start.loc + nchar(short.nt.before.tag) + 8 + nchar(short.nt.after.tag) - 1
-        
-        curr.full.tag <- substr(curr.f.seq, start = start.loc, stop = end.loc)
-        only.tag <- substr(curr.full.tag, start = (nchar(short.nt.before.tag) + 1), stop = (nchar(short.nt.before.tag) + 8))
-        
-        curr.df$Cell.Tag[contain.idx] <- only.tag
-        # Add to the current data frame
-        if (nrow(bam.parsed.df) <= 0) {
-          bam.parsed.df <- curr.df[contain.idx,]
-        } else {
-          bam.parsed.df <- rbind(bam.parsed.df, curr.df[contain.idx, ])
+          curr.f.seq <- curr.seqs[contain.idx]
+          start.loc <- reg.rslt[contain.idx]
+          end.loc <- start.loc + nchar(short.nt.before.tag) + 8 + nchar(short.nt.after.tag) - 1
+          
+          curr.full.tag <- substr(curr.f.seq, start = start.loc, stop = end.loc)
+          only.tag <- substr(curr.full.tag, start = (nchar(short.nt.before.tag) + 1), stop = (nchar(short.nt.before.tag) + 8))
+          
+          curr.df$Cell.Tag[contain.idx] <- only.tag
+          # Add to the current data frame
+          if (nrow(bam.parsed.df) <= 0) {
+            bam.parsed.df <- curr.df[contain.idx,]
+          } else {
+            bam.parsed.df <- rbind(bam.parsed.df, curr.df[contain.idx, ])
+          }
         }
       }
     }

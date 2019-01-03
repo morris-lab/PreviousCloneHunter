@@ -25,7 +25,7 @@ CellTagDataForCollapsing <- function(ctm.after.whitelist, umi.matrix, output.fil
   # Subset the matrix to only contain tags with positive UMI numbers
   for.collapse <- subset(for.collapse, value > 0)
   # Create the contatenation column
-  for.collapse$concat <- paste0(for.collapse$X1, for.collapse$X2)
+  for.collapse$concat <- paste0(unlist(lapply(strsplit(for.collapse$X1, "-"), function(x) x[1])), for.collapse$X2)
   write.csv(for.collapse, output.file, row.names = F, quote = F)
   print(fn.txt)
   write.table(for.collapse$concat, fn.txt, sep = "\t", row.names = F, quote = F, col.names = F)

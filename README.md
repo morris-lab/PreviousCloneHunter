@@ -166,6 +166,10 @@ In this step, we will identify CellTags with similar sequences and collapse simi
 ### 1. Prepare for the data to be collapsed
 First, we will prepare the data to the format that could be accepted by starcode. This function accepts three inputs including the whitelist filtered single-cell data from the previous section, the single-cell full UMI count matrix and the output csv file to save to. The output will be a data frame containing the CellTag information with their corresponding cell barcode and UMI counts. In this function, we concatenate the CellTag with cell barcode and use the combined sequences as input to execute Starcode. The file to be used for Starcode will be stored under the same directory as the output file and with the name provided and the suffix of "collapse.txt".
 ```r
+# Expecting matrix with each column = a cell, each row = a celltag
+sc.celltag.t <- t(sc.celltag)
+colnames(sc.celltag.t) <- rownames(sc.celltag)
+# Generating the collapsing files
 collapse.df <- CellTagDataForCollapsing(metric.filter.sc.data.2, sc.celltag, "./my_favoriate.csv")
 ```
 

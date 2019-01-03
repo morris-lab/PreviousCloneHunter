@@ -150,7 +150,7 @@ metric.filter.sc.data <- MetricBasedFiltering(whitelisted.celltag.data = whiteli
 ```
 #### Filter out cells with less than 2 CellTags
 ```r
-metric.filter.sc.data.2 <- MetricBasedFiltering(whitelisted.celltag.data = whitelist.sc.data.v2, cutoff = 2, comparison = "greater")
+metric.filter.sc.data.2 <- MetricBasedFiltering(whitelisted.celltag.data = metric.filter.sc.data, cutoff = 2, comparison = "greater")
 ```
 ### 7. Last check of metric plots
 ```r

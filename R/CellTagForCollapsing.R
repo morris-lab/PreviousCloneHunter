@@ -30,9 +30,7 @@ CellTagDataForCollapsing <- function(ctm.after.whitelist, umi.matrix, output.fil
   for.collapse$concat <- paste0(for.collapse$X1, unlist(lapply(strsplit(for.collapse$X2, "-"), function(x) x[1])))
   write.csv(for.collapse, output.file, row.names = F, quote = F)
   print(fn.txt)
-  test <- iconv(for.collapse$concat, "UTF-16LE", "UTF-8")
-  writeLines(test, fn.txt, useBytes = T)
-#  write.table(for.collapse$concat, fn.txt, sep = "\t", row.names = F, quote = F, col.names = F, fileEncoding = "UTF-8")
+  write.table(for.collapse$concat, fn.txt, sep = "\t", row.names = F, quote = F, col.names = F)
   return(for.collapse)
 }
 

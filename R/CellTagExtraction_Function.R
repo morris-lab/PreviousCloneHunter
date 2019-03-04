@@ -67,7 +67,7 @@ CellTagExtraction <- function(fastq.bam.input, celltag.version, extraction.outpu
 CellTagMatrixCount <- function(barcodes.file, celltag.read.data.file) {
   # Get the basename of this file
   base.fnm.parts <- strsplit(basename(barcodes.file), "[.]")[[1]]
-  base.fnm <- base.fnm.parts[c(1:(length(base.fnm.parts) - 1))]
+  base.fnm <- paste0(base.fnm.parts[c(1:(length(base.fnm.parts) - 1))], collapse = "_")
   dir.nm <- dirname(celltag.read.data.file)
   
   #Creates a file name for the summary file.

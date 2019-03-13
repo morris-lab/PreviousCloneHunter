@@ -186,7 +186,7 @@ Based on the Jaccard similarity matrix, we can call clones of cells. A clone wil
 Clone.result <- CloneCalling(Jaccard.Matrix = jac.mtx, output.dir = "./", output.filename = "clone_calling_result.csv", correlation.cutoff = 0.7)
 ```
 
-## CellTag Error Correction
+## Optional: CellTag Error Correction
 In this step, we will identify CellTags with similar sequences and collapse similar CellTags to the centroid CellTag. For more information, please refer to starcode software - https://github.com/gui11aume/starcode. Briefly, starcode clusters DNA sequences based on the Levenshtein distances between each pair of sequences, from which we collapse similar CellTag sequences to correct for potential errors occurred during single-cell RNA-sequencing process. Default maximum distance from starcode was used to cluster the CellTags.
 
 ### 1. Prepare for the data to be collapsed
@@ -210,3 +210,4 @@ With the collapsed results, we will regenerate the CellTag x Cell Barcode matrix
 ```r
 collapsed.mtx <- CellTagDataPostCollapsing(sc.cell.tag, "./collapsing_result.txt", "./my_favoriate.csv", "./collapsed_matrix.RDS")
 ```
+##### You can now use the collaped matrix to continue the single-cell data processing section (Step 2 - binarization and on) with the collapsed matrix.

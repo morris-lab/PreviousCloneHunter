@@ -108,58 +108,6 @@ Here we would like to binarize the count matrix to contain 0 or 1, where 0 indic
 binary.sc.celltag <- SingleCellDataBinarization(sc.celltag, 2)
 ```
 
-### 3. Metric plots to facilitate for additional filtering
-We then generate scatter plots for the number of total celltag counts in each cell and the number each tag across all cells. These plots could help us further in filtering and cleaning the data.
-```r
-metric.p <- MetricPlots(celltag.data = binary.sc.celltag)
-print(paste0("Mean CellTags Per Cell: ", metric.p[[1]]))
-print(paste0("Mean CellTag Frequency across Cells: ", metric.p[[2]]))
-```
-
-### 4. Apply the whitelisted CellTags generated from assessment
-##### Note: This filters the single-cell data based on the whitelist of CellTags one by one. By mean of that, if three CellTag libraries were used, the following commands need to be executed for 3 times and result matrices can be further joined (Example provided).
-
-Based on the whitelist generated earlier, we filter the UMI count matrix to contain only whitelisted CelTags.
-```r
-whitelist.sc.data.v2 <- SingleCellDataWhitelist(binary.sc.celltag, whitels.cell.tag.file = "./my_favourite_v2_1.csv")
-```
-For all three CellTags,
-```r
-##########
-# Only run if this sample has been tagged with more than 1 CellTags libraries
-##########
-## NOT RUN
-whitelist.sc.data.v1 <- SingleCellDataWhitelist(binary.sc.celltag, whitels.cell.tag.file = "./my_favourite_v1.csv")
-whitelist.sc.data.v2 <- SingleCellDataWhitelist(binary.sc.celltag, whitels.cell.tag.file = "./my_favourite_v2_1.csv")
-whitelist.sc.data.v3 <- SingleCellDataWhitelist(binary.sc.celltag, whitels.cell.tag.file = "./my_favourite_v3.csv")
-```
-For each version of CellTag library, it should be processed through the following steps one by one to call clones for different pooled CellTag library.
-
-### 5. Check metric plots after whitelist filtering
-Recheck the metric as similar as Step 3
-```r
-metric.p2 <- MetricPlots(celltag.data = whitelist.sc.data.v2)
-print(paste0("Mean CellTags Per Cell: ", metric.p2[[1]]))
-print(paste0("Mean CellTag Frequency across Cells: ", metric.p2[[2]]))
-```
-
-### 6. Additional filtering
-#### Filter out cells with more than 20 CellTags
-```r
-metric.filter.sc.data <- MetricBasedFiltering(whitelisted.celltag.data = whitelist.sc.data.v2, cutoff = 20, comparison = "less")
-```
-#### Filter out cells with less than 2 CellTags
-```r
-metric.filter.sc.data.2 <- MetricBasedFiltering(whitelisted.celltag.data = metric.filter.sc.data, cutoff = 2, comparison = "greater")
-```
-### 7. Last check of metric plots
-```r
-metric.p3 <- MetricPlots(celltag.data = metric.filter.sc.data.2)
-print(paste0("Mean CellTags Per Cell: ", metric.p3[[1]]))
-print(paste0("Mean CellTag Frequency across Cells: ", metric.p3[[2]]))
-```
-If it looks good, proceed to the following steps to carry out CellTag error correction.
-
 ## CellTag Error Correction
 In this step, we will identify CellTags with similar sequences and collapse similar CellTags to the centroid CellTag. For more information, please refer to starcode software - https://github.com/gui11aume/starcode. Briefly, starcode clusters DNA sequences based on the Levenshtein distances between each pair of sequences, from which we collapse similar CellTag sequences to correct for potential errors occurred during single-cell RNA-sequencing process. Default maximum distance from starcode was used to cluster the CellTags.
 
@@ -184,6 +132,59 @@ With the collapsed results, we will regenerate the CellTag x Cell Barcode matrix
 ```r
 collapsed.mtx <- CellTagDataPostCollapsing(metric.filter.sc.data.2, "./collapsing_result.txt", "./my_favoriate.csv", "./collapsed_matrix.RDS")
 ```
+
+## Clean up and Filter the CellTag matrix
+### 1. Metric plots to facilitate for additional filtering
+We then generate scatter plots for the number of total celltag counts in each cell and the number each tag across all cells. These plots could help us further in filtering and cleaning the data.
+```r
+metric.p <- MetricPlots(celltag.data = binary.sc.celltag)
+print(paste0("Mean CellTags Per Cell: ", metric.p[[1]]))
+print(paste0("Mean CellTag Frequency across Cells: ", metric.p[[2]]))
+```
+
+### 2. Apply the whitelisted CellTags generated from assessment
+##### Note: This filters the single-cell data based on the whitelist of CellTags one by one. By mean of that, if three CellTag libraries were used, the following commands need to be executed for 3 times and result matrices can be further joined (Example provided).
+
+Based on the whitelist generated earlier, we filter the UMI count matrix to contain only whitelisted CelTags.
+```r
+whitelist.sc.data.v2 <- SingleCellDataWhitelist(binary.sc.celltag, whitels.cell.tag.file = "./my_favourite_v2_1.csv")
+```
+For all three CellTags,
+```r
+##########
+# Only run if this sample has been tagged with more than 1 CellTags libraries
+##########
+## NOT RUN
+whitelist.sc.data.v1 <- SingleCellDataWhitelist(binary.sc.celltag, whitels.cell.tag.file = "./my_favourite_v1.csv")
+whitelist.sc.data.v2 <- SingleCellDataWhitelist(binary.sc.celltag, whitels.cell.tag.file = "./my_favourite_v2_1.csv")
+whitelist.sc.data.v3 <- SingleCellDataWhitelist(binary.sc.celltag, whitels.cell.tag.file = "./my_favourite_v3.csv")
+```
+For each version of CellTag library, it should be processed through the following steps one by one to call clones for different pooled CellTag library.
+
+### 3. Check metric plots after whitelist filtering
+Recheck the metric as similar as Step 3
+```r
+metric.p2 <- MetricPlots(celltag.data = whitelist.sc.data.v2)
+print(paste0("Mean CellTags Per Cell: ", metric.p2[[1]]))
+print(paste0("Mean CellTag Frequency across Cells: ", metric.p2[[2]]))
+```
+
+### 4. Additional filtering
+#### Filter out cells with more than 20 CellTags
+```r
+metric.filter.sc.data <- MetricBasedFiltering(whitelisted.celltag.data = whitelist.sc.data.v2, cutoff = 20, comparison = "less")
+```
+#### Filter out cells with less than 2 CellTags
+```r
+metric.filter.sc.data.2 <- MetricBasedFiltering(whitelisted.celltag.data = metric.filter.sc.data, cutoff = 2, comparison = "greater")
+```
+### 5. Last check of metric plots
+```r
+metric.p3 <- MetricPlots(celltag.data = metric.filter.sc.data.2)
+print(paste0("Mean CellTags Per Cell: ", metric.p3[[1]]))
+print(paste0("Mean CellTag Frequency across Cells: ", metric.p3[[2]]))
+```
+If it looks good, proceed to the following steps to call the clones.
 
 ## Clone Calling
 ### 1. Jaccard Analysis

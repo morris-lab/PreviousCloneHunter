@@ -25,12 +25,12 @@ extract.dir <- "."
 # Extract the dataset
 unzip(fpath, overwrite = FALSE, exdir = ".")
 full.fpath <- paste0(extract.dir, "/", "V2-1_S2_L001_R1_001.fastq")
-# Set up output file directory
-output.path <- "./celltag_extracted_v2-1_r1.txt"
+# Set up the CellTag Object
+test.obj <- CellTagObject("test_object", fastq.bam.input = full.fpath, celltag.version = "v2")
 # Extract the CellTags
-extracted.cell.tags <- CellTagExtraction(fastq.bam.input = full.fpath, celltag.version = "v2", extraction.output.filename = output.path, save.fullTag = FALSE, save.onlyTag = FALSE)
+test.obj <- CellTagExtraction(test.obj)
 ```
-The extracted CellTag - `extracted.cell.tags` variable - contains a list of two vectors as following.
+The extracted CellTag will be stored as attribute (fastq.full.celltag & fastq.only.celltag) in the result object with the following format.
 
 |First Vector-`extracted.cell.tags[[1]]`|Second Vector-`extracted.cell.tags[[1]]` |
 |:-------------------------------------:|:---------------------------------------:|
@@ -38,17 +38,14 @@ The extracted CellTag - `extracted.cell.tags` variable - contains a list of two 
 
 ### 2. Count the CellTags and sort based on occurrence of each CellTag
 ```r
-# Count the occurrence of each CellTag
-cell.tag.count <- as.data.frame(table(extracted.cell.tags[[2]]), stringsAsFactors = F)
-# Sort the CellTags in descending order of occurrence
-cell.tag.count.sort <- cell.tag.count[order(-cell.tag.count$Freq), ]
-colnames(cell.tag.count.sort) <- c("CellTag", "Count")
+# Count and Sort the CellTags in descending order of occurrence
+test.obj <- AddCellTagFreqSort(test.obj)
 ```
 
 ### 3. Generation of whitelist for this CellTag library
 Here are are generating the whitelist for this CellTag library - CellTag V2. This will remove the CellTags with an occurrence number below the threshold. The threshold (using 90th percentile as an example) is determined: floor[(90th quantile)/10]. The percentile can be changed while calling the function. Occurrence scatter plots are saved under the `output.dir`, which could be further used to determine the percentile for each different CellTag library.
 ```r
-whitelisted.cell.tag <- CellTagWhitelistFiltering(count.sorted.table = cell.tag.count.sort, percentile = 0.9, output.dir="./", output.count.file = "my_favourite_v1.csv", save.output = TRUE)
+test.obj <- CellTagWhitelistFiltering(test.obj, 0.9)
 ```
 The generated whitelist for each library can be used to filter and clean the single-cell CellTag UMI matrices.
 
@@ -57,10 +54,14 @@ In this section, we are presenting an alternative approach that utilizes this pa
 #### Note: Using the package could be slow for the extraction part. For reference, it took approximately an hour to extract from a 40Gb BAM file using a maximum of 8Gb of memory.
 
 ### 1. Download the BAM file 
-Here we would follow the same step as in https://github.com/morris-lab/CellTagWorkflow to download the a BAM file from the Sequence Read Archive (SRA) server. Again, this file is quite large. Hence, it might take a while to download.
+Here we would follow the same step as in https://github.com/morris-lab/CellTagWorkflow to download the a BAM file from the Sequence Read Archive (SRA) server. Again, this file is quite large. Hence, it might take a while to download. The file can be downloaded using wget in terminal as well as in R.
 ```r
 # bash
 wget https://sra-download.ncbi.nlm.nih.gov/traces/sra65/SRZ/007347/SRR7347033/hf1.d15.possorted_genome_bam.bam
+```
+OR
+```r
+download.file("https://sra-download.ncbi.nlm.nih.gov/traces/sra65/SRZ/007347/SRR7347033/hf1.d15.possorted_genome_bam.bam", "./hf1.d15.bam")
 ```
 
 ### 2. Extract the CellTags from BAM file
@@ -70,7 +71,12 @@ In this step, we will extract the CellTag information from the BAM file, which c
 |:----------:|:-:|:---------:|
 |Cell.BC|UMI|Cell.Tag|
 ```r
-extracted.cell.tags.bam <- CellTagExtraction(fastq.bam.input="./hf1.d15.possorted_genome_bam.bam", celltag.version="v1", extraction.output.filename="./hf1.d15.possorted.celltag.tsv", FALSE, FALSE)
+# Set up the CellTag Object
+bam.test.obj <- CellTagObject("bam.cell.tag.obj", fastq.bam.input="./hf1.d15.bam", celltag.version="v1")
+# Extract the CellTag information
+bam.test.obj <- CellTagExtraction(bam.test.obj)
+# Check the bam file result
+head(bam.test.obj@bam.parse.rslt)
 ```
 
 ### 3. Quantify the CellTag UMI Counts and Generate UMI Count Matrices
@@ -81,7 +87,9 @@ In this step, we will quantify the CellTag UMI counts and generate the UMI count
 |Cell.BC|Motif 1|Motif 2|\<all tags detected\>|Motif N|
 
 ```r
-ct.mtx <- CellTagMatrixCount("barcodes.tsv", "./hf1.d15.possorted.celltag.tsv")
+bam.test.obj <- CellTagMatrixCount(bam.test.obj, "./barcodes.tsv")
+# Check the stats
+bam.test.obj@celltag.stats
 ```
 
 The generated CellTag UMI count matrices can then be used in the following steps for clone identification.

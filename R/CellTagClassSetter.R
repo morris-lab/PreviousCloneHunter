@@ -1,0 +1,29 @@
+#' @export
+setClass("CellTag",
+         slots = list(obj.name = "character",
+                      fastq.bam.dir = "character",
+                      celltag.version = "character",
+                      fastq.full.celltag = "ANY",
+                      fastq.only.celltag = "ANY",
+                      celltag.freq.stats = "ANY",
+                      whitelist = "data.frame",
+                      bam.parse.rslt = "ANY",
+                      celltag.stats = "data.frame",
+                      raw.count = "dgCMatrix",
+                      whitelisted.count = "dgCMatrix",
+                      metric.filtered.count = "dgCMatrix",
+                      binary.mtx = "dgCMatrix",
+                      jaccard.mtx = "dgCMatrix",
+                      clone.composition = "ANY",
+                      clone.size.info = "data.frame"))
+#' @export
+setMethod("show",
+          "CellTag",
+          function(object) {
+            cat("Object name: ", object@obj.name, "\n")
+            cat("Raw CellTag Counts = ", (ncol(object@raw.count)), "\n")
+            cat("Raw Number of Cells with CellTag = ", nrow(object@raw.count), "\n")
+            cat("Whitelisted CellTag Counts = ", (ncol(object@whitelisted.count)), "\n")
+            cat("Whitelisted Number of Cells with CellTag = ", nrow(object@whitelisted.count), "\n")
+          })
+

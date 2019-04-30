@@ -9,7 +9,9 @@ setClass("CellTag",
                       whitelist = "data.frame",
                       bam.parse.rslt = "ANY",
                       celltag.stats = "data.frame",
+                      pre.starcode = "data.frame",
                       raw.count = "dgCMatrix",
+                      collapsed.count = "dgCMatrix",
                       whitelisted.count = "dgCMatrix",
                       metric.filtered.count = "dgCMatrix",
                       binary.mtx = "dgCMatrix",
@@ -23,6 +25,7 @@ setMethod("show",
             cat("Object name: ", object@obj.name, "\n")
             cat("Raw CellTag Counts = ", (ncol(object@raw.count)), "\n")
             cat("Raw Number of Cells with CellTag = ", nrow(object@raw.count), "\n")
+            cat("Collapsed CellTag Counts = ", ncol(object@collapsed.count), "\n")
             cat("Whitelisted CellTag Counts = ", (ncol(object@whitelisted.count)), "\n")
             cat("Whitelisted Number of Cells with CellTag = ", nrow(object@whitelisted.count), "\n")
           })

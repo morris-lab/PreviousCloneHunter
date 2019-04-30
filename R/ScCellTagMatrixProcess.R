@@ -10,7 +10,11 @@
 #' SingleCellDataBinatization(bam.test.obj, 2)
 #' 
 SingleCellDataBinatization <- function(celltag.obj, tag.cutoff) {
-  CellTags <- celltag.obj@raw.count
+  if (sum(dim(celltag.obj@collapsed.count)) <= 0) {
+    CellTags <- celltag.obj@raw.count
+  } else {
+    CellTags <- celltag.obj@collapsed.count
+  }
   CellTags[CellTags < tag.cutoff] <- 0
   CellTags[CellTags > 0] <- 1
   celltag.obj@binary.mtx <- as(CellTags, "dgCMatrix")

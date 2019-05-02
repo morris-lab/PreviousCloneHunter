@@ -10,15 +10,17 @@
 #' SingleCellDataBinatization(bam.test.obj, 2)
 #' 
 SingleCellDataBinatization <- function(celltag.obj, tag.cutoff) {
-  if (sum(dim(celltag.obj@collapsed.count)) <= 0) {
-    CellTags <- celltag.obj@raw.count
+  obj.collapsed.count <- GetCellTagCurrentVersionWorkingMatrix(celltag.obj, "collapsed.count")
+  if (sum(dim(obj.collapsed.count)) <= 0) {
+    CellTags <- GetCellTagCurrentVersionWorkingMatrix(celltag.obj, "raw.count")
   } else {
     CellTags <- celltag.obj@collapsed.count
   }
   CellTags[CellTags < tag.cutoff] <- 0
   CellTags[CellTags > 0] <- 1
-  celltag.obj@binary.mtx <- as(CellTags, "dgCMatrix")
-  return(celltag.obj)
+  new.obj <- SetCellTagCurrentVersionWorkingMatrix(celltag.obj, "binary.mtx", as(CellTags, "dgCMatrix"))
+  
+  return(new.obj)
 }
 
 #' Single-cell RNA-seq Whitelisting Function
@@ -34,7 +36,7 @@ SingleCellDataBinatization <- function(celltag.obj, tag.cutoff) {
 #' 
 SingleCellDataWhitelist <- function(celltag.obj, whitels.cell.tag.file) {
   # Store the cell names
-  CellTags <- celltag.obj@binary.mtx
+  CellTags <- GetCellTagCurrentVersionWorkingMatrix(celltag.obj, "binary.mtx")
   cell.names <- rownames(CellTags)
   
   # Process the celltag matrix to format below
@@ -59,8 +61,8 @@ SingleCellDataWhitelist <- function(celltag.obj, whitels.cell.tag.file) {
   celltags.whitelisted <- CellTags[whitelist,]
   colnames(celltags.whitelisted) <- cell.names
   
-  celltag.obj@whitelisted.count <- as(as.matrix(celltags.whitelisted), "dgCMatrix")
-  return(celltag.obj)
+  new.obj <- SetCellTagCurrentVersionWorkingMatrix(celltag.obj, "whitelisted.count", as(as.matrix(celltags.whitelisted), "dgCMatrix"))
+  return(new.obj)
 }
 
 

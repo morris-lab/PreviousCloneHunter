@@ -20,7 +20,7 @@ JaccardAnalysis <- function(celltag.obj, plot.corr = TRUE) {
     p1 <- corrplot(Jac, method="color", order="hclust", hclust.method ="ward.D2", cl.lim=c(0,1), tl.cex=0.1)
   }
   
-  celltag.obj@jaccard.mtx <- as(Jac, "dgCMatrix")
+  celltag.obj@jaccard.mtx[[celltag.obj@curr.version]] <- as(Jac, "dgCMatrix")
   return(celltag.obj)
 }
 
@@ -36,7 +36,7 @@ JaccardAnalysis <- function(celltag.obj, plot.corr = TRUE) {
 #' CloneCalling(bam.test.obj, 0.7)
 #'
 CloneCalling <- function(celltag.obj, correlation.cutoff) {
-  Jaccard.Matrix <- celltag.obj@jaccard.mtx
+  Jaccard.Matrix <- celltag.obj@jaccard.mtx[[celltag.obj@curr.version]]
   # Using the igraph package to facilitate the identification of membership to each clone
   test <- Jaccard.Matrix*lower.tri(Jaccard.Matrix)
   check.corelation <- which(test > correlation.cutoff, arr.ind=TRUE)
@@ -62,8 +62,8 @@ CloneCalling <- function(celltag.obj, correlation.cutoff) {
   counts <- as.data.frame(counts)
   colnames(counts) <- c("Clone.ID", "Frequency")
   
-  celltag.obj@clone.composition <- df.comb
-  celltag.obj@clone.size.info <- counts
+  celltag.obj@clone.composition[[celltag.obj@curr.version]] <- df.comb
+  celltag.obj@clone.size.info[[celltag.obj@curr.version]] <- counts
   return(celltag.obj)
 }
 

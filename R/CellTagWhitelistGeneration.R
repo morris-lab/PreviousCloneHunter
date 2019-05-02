@@ -12,7 +12,7 @@
 #' 
 CellTagWhitelistFiltering <- function(celltag.obj, percentile, output.dir = NULL) {
   # Load table and calculate cutoff
-  count.sorted.table <- celltag.obj@celltag.freq.stats
+  count.sorted.table <- celltag.obj@celltag.freq.stats[[celltag.obj@curr.version]]
   count.cutoff <- quantile(count.sorted.table$Count, probs = percentile)
   count.true.cut <- floor(count.cutoff/10)
   
@@ -24,12 +24,12 @@ CellTagWhitelistFiltering <- function(celltag.obj, percentile, output.dir = NULL
   # Subset the ones pass filtering
   whitelist <- subset(count.sorted.table, Count>=count.true.cut)
   
-  if (is.null(output.dir)) output.dir <- paste0(dirname(celltag.obj@fastq.bam.dir), "/", celltag.obj@celltag.version, "_whitelist.csv")
+  if (is.null(output.dir)) output.dir <- paste0(dirname(celltag.obj@fastq.bam.dir[celltag.obj@curr.version]), "/", celltag.obj@curr.version, "_whitelist.csv")
   write.csv(whitelist, output.dir, quote = F, row.names = F)
   
   cat("File is saved: ", output.dir, "\n")
   
-  celltag.obj@whitelist <- whitelist
+  celltag.obj@whitelist[[celltag.obj@curr.version]] <- whitelist
   return(celltag.obj)
 }
 
@@ -45,11 +45,11 @@ CellTagWhitelistFiltering <- function(celltag.obj, percentile, output.dir = NULL
 #' 
 AddCellTagFreqSort <- function(celltag.obj) {
   # Count the occurrence of each CellTag
-  cell.tag.count <- as.data.table(table(celltag.obj@fastq.only.celltag), stringsAsFactors = F)
+  cell.tag.count <- as.data.table(table(celltag.obj@fastq.only.celltag[[celltag.obj@curr.version]]), stringsAsFactors = F)
   # Sort the CellTags in descending order of occurrence
   cell.tag.count.sort <- cell.tag.count[order(-cell.tag.count$N), ]
   colnames(cell.tag.count.sort) <- c("CellTag", "Count")
   # Add to the slot in celltag object
-  celltag.obj@celltag.freq.stats <- cell.tag.count.sort
+  celltag.obj@celltag.freq.stats[[celltag.obj@curr.version]] <- cell.tag.count.sort
   return(celltag.obj)
 }

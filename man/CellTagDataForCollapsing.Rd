@@ -4,14 +4,14 @@
 \alias{CellTagDataForCollapsing}
 \title{CellTag Starcode Prior Collapsing}
 \usage{
-CellTagDataForCollapsing(ctm.after.whitelist, umi.matrix, output.file)
+CellTagDataForCollapsing(celltag.obj, output.file)
 }
 \arguments{
+\item{output.file}{The filepath and name to save the table for collapsing}
+
 \item{ctm.after.whitelist}{CellTag single-cell matrix after whitelist filtering}
 
 \item{umi.matrix}{CellTag raw UMI count matrix}
-
-\item{output.file}{The filepath and name to save the table for collapsing}
 }
 \value{
 The data frame for collapsing

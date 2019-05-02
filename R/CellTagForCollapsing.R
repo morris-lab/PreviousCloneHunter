@@ -12,8 +12,8 @@
 #' 
 CellTagDataForCollapsing <- function(celltag.obj, output.file) {
   # Get the data out from the CellTag object
-  umi.matrix <- as.matrix(celltag.obj@raw.count)
-  for.collapse <- t(umi.matrix)
+  umi.matrix <- GetCellTagCurrentVersionWorkingMatrix(celltag.obj, "raw.count")
+  for.collapse <- t(as.matrix(umi.matrix))
   # Melt the matrix
   for.collapse <- melt(for.collapse)
   # Subset the matrix to only contain tags with positive UMI numbers
@@ -24,7 +24,7 @@ CellTagDataForCollapsing <- function(celltag.obj, output.file) {
   for.collapse$concat <- paste0(for.collapse$X1, unlist(lapply(strsplit(for.collapse$X2, "-"), function(x) x[1])))
   write.table(for.collapse$concat, output.file, sep = "\t", row.names = F, quote = F, col.names = F)
   # Set CellTag object
-  celltag.obj@pre.starcode <- for.collapse
+  celltag.obj@pre.starcode[[celltag.obj@curr.version]] <- for.collapse
   # Print the path saved
   cat("The file for collapsing is stored at: ", output.file, "\n")
   return(celltag.obj)
@@ -47,7 +47,7 @@ CellTagDataPostCollapsing <- function(celltag.obj, collapsed.rslt.file) {
   # Read in the collpased result
   collapsed <- read.table(collapsed.rslt.file, sep = "\t", header = F, stringsAsFactors = F)
   # Read in the file for collapsing
-  collapsing <- celltag.obj@pre.starcode
+  collapsing <- celltag.obj@pre.starcode[[celltag.obj@curr.version]]
   colnames(collapsing)[c(1:2)] <- c("CellTag", "Cell.Barcode")
   new.collapsing.df <- collapsing
   # Process the collapsing data file
@@ -81,6 +81,6 @@ CellTagDataPostCollapsing <- function(celltag.obj, collapsed.rslt.file) {
   new.matrix <- as.matrix(new.matrix[, ..cnms])
   rownames(new.matrix) <- cell.rnm
   # Save the new matrix to the object
-  celltag.obj@collapsed.count <- as(new.matrix, "dgCMatrix")
-  return(celltag.obj)
+  new.obj <- SetCellTagCurrentVersionWorkingMatrix(celltag.obj, "collapsed.count", as(new.matrix, "dgCMatrix"))
+  return(new.obj)
 }

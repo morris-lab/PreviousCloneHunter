@@ -11,7 +11,8 @@
 #' MetricBasedFiltering(bam.test.object, 20, "less")
 #'
 MetricBasedFiltering <- function(celltag.obj, cutoff, comparison = "less") {
-  whitelisted.celltag.data <- t(celltag.obj@whitelisted.count)
+  whitelisted.ct.data <- GetCellTagCurrentVersionWorkingMatrix(celltag.obj, "whitelisted.count")
+  whitelisted.celltag.data <- t(whitelisted.ct.data)
   # Set up the filtering data frame
   CellTags.per.cell.whitelisted.pf <- as.data.frame(rowSums(whitelisted.celltag.data))
   
@@ -25,8 +26,8 @@ MetricBasedFiltering <- function(celltag.obj, cutoff, comparison = "less") {
   # Filter celltag dataset
   celltags.whitelisted.new <- whitelisted.celltag.data[cell.bc.filter, ]
   
-  celltag.obj@metric.filtered.count <- celltags.whitelisted.new
-  return(celltag.obj)
+  new.obj <- SetCellTagCurrentVersionWorkingMatrix(celltag.obj, "metric.filtered.count", as(celltags.whitelisted.new, "dgCMatrix"))
+  return(new.obj)
 }
 
 #' CellTag Metric Plotting Function
@@ -39,14 +40,18 @@ MetricBasedFiltering <- function(celltag.obj, cutoff, comparison = "less") {
 #' MetricPlots(bam.test.obj)
 #'
 MetricPlots <- function(celltag.obj) {
-  if (nrow(celltag.obj@metric.filtered.count) <= 0) {
-    if (nrow(celltag.obj@whitelisted.count) <= 0) {
-      celltag.data <- celltag.obj@binary.mtx
+  
+  obj.metric.filtered.count <- GetCellTagCurrentVersionWorkingMatrix(celltag.obj, "metric.filtered.count")
+  obj.whitelisted.count <- GetCellTagCurrentVersionWorkingMatrix(celltag.obj, "whitelisted.count")
+  
+  if (nrow(obj.metric.filtered.count) <= 0) {
+    if (nrow(obj.whitelisted.count) <= 0) {
+      celltag.data <- GetCellTagCurrentVersionWorkingMatrix(celltag.obj, "binary.mtx")
     } else {
-      celltag.data <- celltag.obj@whitelisted.count
+      celltag.data <- obj.whitelisted.count
     }
   } else {
-    celltag.data <- celltag.obj@metric.filtered.count
+    celltag.data <- obj.metric.filtered.count
   }
   
   CellTags.per.cell.whitelisted.pf <- rowSums(celltag.data)

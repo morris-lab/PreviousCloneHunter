@@ -4,13 +4,12 @@
 \alias{CellTagDataPostCollapsing}
 \title{CellTag Starcode Post Collapsing}
 \usage{
-CellTagDataPostCollapsing(ctm.after.whitelist, collapsed.rslt.file,
-  collapsed.csv.file, output.file)
+CellTagDataPostCollapsing(celltag.obj, collapsed.rslt.file)
 }
 \arguments{
-\item{ctm.after.whitelist}{CellTag single-cell matrix after whitelist filtering}
-
 \item{collapsed.rslt.file}{File path to the collapsed result file}
+
+\item{ctm.after.whitelist}{CellTag single-cell matrix after whitelist filtering}
 
 \item{collapsed.csv.file}{File path to the data frame file generated for collapsing}
 

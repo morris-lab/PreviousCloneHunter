@@ -20,6 +20,13 @@ fastq.process <- function(fastq.file, pattern, short.nt.before.tag, short.nt.aft
   full.tag.seq <- c()
   only.tag.seq <- c()
   print("Reading File......")
+  # Get the size of the bam file
+  fq.size <- file.size(fastq.file)
+  total <- fq.size/(1000000 * 82.99)
+  # Initialize the progress bar
+  pb <- txtProgressBar(min = 0, max = total, style = 3)
+  # Initialize the count
+  count <- 0
   while(TRUE) {
     curr.lines <- readLines(con, 1000000)
     if (length(curr.lines) == 0) break
@@ -38,9 +45,11 @@ fastq.process <- function(fastq.file, pattern, short.nt.before.tag, short.nt.aft
       full.tag.seq <- c(full.tag.seq, curr.full.tag)
       only.tag.seq <- c(only.tag.seq, only.tag)
     }
+    count <- count + 1
+    setTxtProgressBar(pb, count)
   }
   close(con)
-  
+  close(pb)
   rslt <- list(full.tag.seq, only.tag.seq)
   return(rslt)
 }
@@ -68,7 +77,12 @@ bam.process <- function(bam.file, pattern, short.nt.before.tag, short.nt.after.t
   library(Rsamtools)
   # Get the bam file
   bamFile <- BamFile(bam.file)
-  
+  # Get the size of the bam file
+  bam.size <- file.size(bam.file)
+  total <- bam.size/(1000000 * 82.99)
+  # Initialize the progress bar
+  pb <- txtProgressBar(min = 0, max = total, style = 3)
+  # Initialize the number of lines to read at once
   yieldSize(bamFile) <- 1000000
   open(bamFile)
   parameters <- ScanBamParam(what = scanBamWhat(), tag = c("CB", "GN", "UB", "CR"))
@@ -76,7 +90,7 @@ bam.process <- function(bam.file, pattern, short.nt.before.tag, short.nt.after.t
   count <- 0
   while(TRUE) {
     curr.read <- scanBam(bamFile, param = parameters)[[1]]
-    print(count)
+#    print(count)
     if (length(curr.read$qname) <= 0) {
       break
     } else {
@@ -111,8 +125,10 @@ bam.process <- function(bam.file, pattern, short.nt.before.tag, short.nt.after.t
       }
     }
     count <- count + 1
+    setTxtProgressBar(pb, count)
   }
   close(bamFile)
+  close(pb)
   return(bam.parsed.df)
 }
 
@@ -137,4 +153,27 @@ CellTagPatternCalling <- function(celltag.version) {
   pattern <- paste0(short.nt.before.tag, "[ATCG]{8}", short.nt.after.tag)
   return(c(pattern, short.nt.before.tag, short.nt.after.tag))
 }
+
+
+GetCellTagCurrentVersionWorkingMatrix <- function(celltag.obj, slot.to.select) {
+  curr.mtx <- slot(celltag.obj, slot.to.select)
+  curr.version <- celltag.obj@curr.version
+  curr.mtx.sub <- curr.mtx[, which(startsWith(colnames(curr.mtx), curr.version))]
+  colnames(curr.mtx.sub) <- gsub(pattern = paste0(curr.version, "."), replacement = "", colnames(curr.mtx.sub))
+  return(curr.mtx.sub)
+}
+
+SetCellTagCurrentVersionWorkingMatrix <- function(celltag.obj, slot.to.set, final.to.set) {
+  cop.final <- final.to.set
+  colnames(cop.final) <- paste0(celltag.obj$curr.version, ".", colnames(cop.final))
+  if (sum(dim(slot(celltag.obj, slot.to.set))) <= 0) {
+    slot(celltag.obj, slot.to.set) <- cop.final
+  } else  {
+    curr.existing.mtx <- slot(celltag.obj, slot.to.set)
+    new.mtx <- cbind(curr.existing.mtx, cop.final)
+    slot(celltag.obj, slot.to.set) <- new.mtx
+  }
+  return(celltag.obj)
+} 
+
 

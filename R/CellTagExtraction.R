@@ -8,20 +8,29 @@
 #' @examples
 #' CellTagExtraction(bam.test.obj)
 #' 
-CellTagExtraction <- function(celltag.obj) {
+CellTagExtraction <- function(celltag.obj, celltag.version) {
+  celltag.obj@curr.version <- celltag.version
   fastq.bam.input <- celltag.obj@fastq.bam.dir
-  celltag.version <- celltag.obj@celltag.version
+  if (length(celltag.obj@celltag.version) > 0) {
+    if (celltag.obj@curr.version %in% celltag.obj@celltag.version) {
+      print("This CellTag has already been processed!")
+    } else {
+      celltag.obj@celltag.version <- c(celltag.obj@celltag.version, celltag.obj@curr.version)
+    }
+  } else {
+    celltag.obj@celltag.version <- celltag.obj@curr.version
+  }
   
   p.calling <- CellTagPatternCalling(celltag.version)
   
   if (endsWith(fastq.bam.input, "fastq")) {
     rslt <- fastq.process(fastq.file = fastq.bam.input, pattern = p.calling[1], p.calling[2], p.calling[3])
-    celltag.obj@fastq.full.celltag <- rslt[[1]]
-    celltag.obj@fastq.only.celltag <- rslt[[2]]
+    celltag.obj@fastq.full.celltag[[celltag.version]] <- rslt[[1]]
+    celltag.obj@fastq.only.celltag[[celltag.version]] <- rslt[[2]]
   }
   if (endsWith(fastq.bam.input, "bam")) {
     rslt <- bam.process(bam.file = fastq.bam.input, pattern = p.calling[1], p.calling[2], p.calling[3])
-    celltag.obj@bam.parse.rslt <- rslt
+    celltag.obj@bam.parse.rslt[[celltag.version]] <- rslt
   }
   
   return(celltag.obj)

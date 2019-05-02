@@ -10,7 +10,7 @@
 #' @examples
 #' CellTagObejct("hf1.d15.test", "hf1.d15.bam", "v1")
 #'
-CellTagObject <- function(object.name, fastq.bam.input, celltag.version) {
-  ct <- new("CellTag", obj.name = object.name, fastq.bam.dir = fastq.bam.input, celltag.version = celltag.version)
+CellTagObject <- function(object.name, fastq.bam.directory) {
+  ct <- new("CellTag", obj.name = object.name, fastq.bam.dir = fastq.bam.directory)
   return(ct)
 }

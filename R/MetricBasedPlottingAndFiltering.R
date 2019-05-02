@@ -12,9 +12,14 @@
 #'
 MetricBasedFiltering <- function(celltag.obj, cutoff, comparison = "less") {
   whitelisted.ct.data <- GetCellTagCurrentVersionWorkingMatrix(celltag.obj, "whitelisted.count")
-  whitelisted.celltag.data <- t(whitelisted.ct.data)
+  metric.filter.ct.data <- GetCellTagCurrentVersionWorkingMatrix(celltag.obj, "metric.filtered.count")
+  if (ncol(metric.filter.ct.data) <= 0) {
+    whitelisted.celltag.data <- as.matrix(whitelisted.ct.data)
+  } else {
+    whitelisted.celltag.data <- as.matrix(metric.filter.ct.data)
+  }
   # Set up the filtering data frame
-  CellTags.per.cell.whitelisted.pf <- as.data.frame(rowSums(whitelisted.celltag.data))
+  CellTags.per.cell.whitelisted.pf <- as.data.frame(Matrix::rowSums(whitelisted.celltag.data))
   
   # Set up the filtered celltag dataset object
   if (comparison == "less") {
@@ -25,8 +30,9 @@ MetricBasedFiltering <- function(celltag.obj, cutoff, comparison = "less") {
   cell.bc.filter <- row.names(cell.filter)
   # Filter celltag dataset
   celltags.whitelisted.new <- whitelisted.celltag.data[cell.bc.filter, ]
-  
+
   new.obj <- SetCellTagCurrentVersionWorkingMatrix(celltag.obj, "metric.filtered.count", as(celltags.whitelisted.new, "dgCMatrix"))
+
   return(new.obj)
 }
 
@@ -44,8 +50,8 @@ MetricPlots <- function(celltag.obj) {
   obj.metric.filtered.count <- GetCellTagCurrentVersionWorkingMatrix(celltag.obj, "metric.filtered.count")
   obj.whitelisted.count <- GetCellTagCurrentVersionWorkingMatrix(celltag.obj, "whitelisted.count")
   
-  if (nrow(obj.metric.filtered.count) <= 0) {
-    if (nrow(obj.whitelisted.count) <= 0) {
+  if (ncol(obj.metric.filtered.count) <= 0) {
+    if (ncol(obj.whitelisted.count) <= 0) {
       celltag.data <- GetCellTagCurrentVersionWorkingMatrix(celltag.obj, "binary.mtx")
     } else {
       celltag.data <- obj.whitelisted.count
@@ -54,9 +60,9 @@ MetricPlots <- function(celltag.obj) {
     celltag.data <- obj.metric.filtered.count
   }
   
-  CellTags.per.cell.whitelisted.pf <- rowSums(celltag.data)
+  CellTags.per.cell.whitelisted.pf <- Matrix::rowSums(celltag.data)
   CellTags.per.cell.avg <- mean(CellTags.per.cell.whitelisted.pf)
-  CellTags.frequency.whitelisted.pf <- colSums(celltag.data)
+  CellTags.frequency.whitelisted.pf <- Matrix::colSums(celltag.data)
   CellTags.freq.avg <- mean(CellTags.frequency.whitelisted.pf)
   plot(CellTags.per.cell.whitelisted.pf)
   plot(CellTags.frequency.whitelisted.pf)

@@ -36,7 +36,7 @@ SingleCellDataBinatization <- function(celltag.obj, tag.cutoff) {
 #' 
 SingleCellDataWhitelist <- function(celltag.obj, whitels.cell.tag.file) {
   # Store the cell names
-  CellTags <- GetCellTagCurrentVersionWorkingMatrix(celltag.obj, "binary.mtx")
+  CellTags <- as.matrix(GetCellTagCurrentVersionWorkingMatrix(celltag.obj, "binary.mtx"))
   cell.names <- rownames(CellTags)
   
   # Process the celltag matrix to format below
@@ -61,7 +61,7 @@ SingleCellDataWhitelist <- function(celltag.obj, whitels.cell.tag.file) {
   celltags.whitelisted <- CellTags[whitelist,]
   colnames(celltags.whitelisted) <- cell.names
   
-  new.obj <- SetCellTagCurrentVersionWorkingMatrix(celltag.obj, "whitelisted.count", as(as.matrix(celltags.whitelisted), "dgCMatrix"))
+  new.obj <- SetCellTagCurrentVersionWorkingMatrix(celltag.obj, "whitelisted.count", as(t(as.matrix(celltags.whitelisted)), "dgCMatrix"))
   return(new.obj)
 }
 

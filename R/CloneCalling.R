@@ -10,17 +10,17 @@
 #' JaccardAnalysis(bam.test.obj)
 #'
 JaccardAnalysis <- function(celltag.obj, plot.corr = TRUE) {
-  filtered.whitelised.data <- celltag.obj@metric.filtered.count
+  filtered.whitelised.data <- GetCellTagCurrentVersionWorkingMatrix(celltag.obj, "metric.filtered.count")
   # Calculating the Jaccard matrix
   Jac <- simil(as.matrix(filtered.whitelised.data), method = "Jaccard")
   Jac <- as.matrix(Jac)
   
   if (plot.corr) {
     diag(Jac) <- 1
-    p1 <- corrplot(Jac, method="color", order="hclust", hclust.method ="ward.D2", cl.lim=c(0,1), tl.cex=0.1)
+    corrplot(Jac, method="color", order="hclust", hclust.method ="ward.D2", cl.lim=c(0,1), tl.cex=0.1)
   }
   
-  celltag.obj@jaccard.mtx[[celltag.obj@curr.version]] <- as(Jac, "dgCMatrix")
+  celltag.obj@jaccard.mtx <- as(Jac, "dgCMatrix")
   return(celltag.obj)
 }
 
@@ -36,7 +36,7 @@ JaccardAnalysis <- function(celltag.obj, plot.corr = TRUE) {
 #' CloneCalling(bam.test.obj, 0.7)
 #'
 CloneCalling <- function(celltag.obj, correlation.cutoff) {
-  Jaccard.Matrix <- celltag.obj@jaccard.mtx[[celltag.obj@curr.version]]
+  Jaccard.Matrix <- as.matrix(celltag.obj@jaccard.mtx)
   # Using the igraph package to facilitate the identification of membership to each clone
   test <- Jaccard.Matrix*lower.tri(Jaccard.Matrix)
   check.corelation <- which(test > correlation.cutoff, arr.ind=TRUE)

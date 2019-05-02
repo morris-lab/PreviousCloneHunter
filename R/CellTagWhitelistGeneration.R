@@ -24,7 +24,7 @@ CellTagWhitelistFiltering <- function(celltag.obj, percentile, output.dir = NULL
   # Subset the ones pass filtering
   whitelist <- subset(count.sorted.table, Count>=count.true.cut)
   
-  if (is.null(output.dir)) output.dir <- paste0(dirname(celltag.obj@fastq.bam.dir[celltag.obj@curr.version]), "/", celltag.obj@curr.version, "_whitelist.csv")
+  if (is.null(output.dir)) output.dir <- paste0(dirname(celltag.obj@fastq.bam.dir), "/", celltag.obj@curr.version, "_whitelist.csv")
   write.csv(whitelist, output.dir, quote = F, row.names = F)
   
   cat("File is saved: ", output.dir, "\n")

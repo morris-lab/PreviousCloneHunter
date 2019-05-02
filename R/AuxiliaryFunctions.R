@@ -22,7 +22,7 @@ fastq.process <- function(fastq.file, pattern, short.nt.before.tag, short.nt.aft
   print("Reading File......")
   # Get the size of the bam file
   fq.size <- file.size(fastq.file)
-  total <- fq.size/(1000000 * 82.99)
+  total <- fq.size/(1000000 * 101)
   # Initialize the progress bar
   pb <- txtProgressBar(min = 0, max = total, style = 3)
   # Initialize the count
@@ -46,6 +46,9 @@ fastq.process <- function(fastq.file, pattern, short.nt.before.tag, short.nt.aft
       only.tag.seq <- c(only.tag.seq, only.tag)
     }
     count <- count + 1
+    if (count > total) {
+      count <- total
+    }
     setTxtProgressBar(pb, count)
   }
   close(con)
@@ -157,22 +160,51 @@ CellTagPatternCalling <- function(celltag.version) {
 
 GetCellTagCurrentVersionWorkingMatrix <- function(celltag.obj, slot.to.select) {
   curr.mtx <- slot(celltag.obj, slot.to.select)
-  curr.version <- celltag.obj@curr.version
-  curr.mtx.sub <- curr.mtx[, which(startsWith(colnames(curr.mtx), curr.version))]
-  colnames(curr.mtx.sub) <- gsub(pattern = paste0(curr.version, "."), replacement = "", colnames(curr.mtx.sub))
-  return(curr.mtx.sub)
+  if (nrow(curr.mtx) <= 0) {
+    return(curr.mtx)
+  } else {
+    curr.version <- celltag.obj@curr.version
+    curr.mtx.sub <- curr.mtx[, which(startsWith(colnames(curr.mtx), curr.version))]
+    colnames(curr.mtx.sub) <- gsub(pattern = paste0(curr.version, "."), replacement = "", colnames(curr.mtx.sub))
+    full.mtx.sub <- curr.mtx.sub[Matrix::rowSums(is.na(curr.mtx.sub)) != ncol(curr.mtx.sub),]
+    
+    return(full.mtx.sub)
+  }
 }
 
 SetCellTagCurrentVersionWorkingMatrix <- function(celltag.obj, slot.to.set, final.to.set) {
   cop.final <- final.to.set
-  colnames(cop.final) <- paste0(celltag.obj$curr.version, ".", colnames(cop.final))
+  colnames(cop.final) <- paste0(celltag.obj@curr.version, ".", colnames(cop.final))
+  curr.version.existing.mtx <- GetCellTagCurrentVersionWorkingMatrix(celltag.obj, slot.to.set)
+  
   if (sum(dim(slot(celltag.obj, slot.to.set))) <= 0) {
     slot(celltag.obj, slot.to.set) <- cop.final
   } else  {
     curr.existing.mtx <- slot(celltag.obj, slot.to.set)
-    new.mtx <- cbind(curr.existing.mtx, cop.final)
+    if (ncol(curr.version.existing.mtx) > 0) {
+      curr.ver.exist.colnames <- paste0(celltag.obj@curr.version, ".", colnames(curr.version.existing.mtx))
+      indx <- which(colnames(curr.existing.mtx) %in% curr.ver.exist.colnames)
+      curr.existing.mtx <- curr.existing.mtx[, -indx]
+    }
+    new.rownames <- unique(c(rownames(curr.existing.mtx), rownames(cop.final)))
+
+    diff.rnms <- setdiff(new.rownames, rownames(cop.final))
+    cop.comp.mtx <- matrix(NA, nrow = length(diff.rnms), ncol = ncol(cop.final))
+    rownames(cop.comp.mtx) <- diff.rnms
+    colnames(cop.comp.mtx) <- colnames(cop.final)
+
+    diff.rnms.2 <- setdiff(new.rownames, rownames(curr.existing.mtx))
+    cem.comp.mtx <- matrix(NA, nrow = length(diff.rnms.2), ncol = ncol(curr.existing.mtx))
+    rownames(cem.comp.mtx) <- diff.rnms.2
+    colnames(cem.comp.mtx) <- colnames(curr.existing.mtx)
+
+    to.merge.mtx.cop <- rbind(cop.final, cop.comp.mtx)
+    to.merge.mtx.cem <- rbind(curr.existing.mtx, cem.comp.mtx)
+
+    new.mtx <- cbind(to.merge.mtx.cem, to.merge.mtx.cop)
     slot(celltag.obj, slot.to.set) <- new.mtx
   }
+  
   return(celltag.obj)
 } 
 

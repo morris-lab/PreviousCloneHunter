@@ -16,7 +16,7 @@ setClass("CellTag",
                       whitelisted.count = "dgCMatrix",
                       metric.filtered.count = "dgCMatrix",
                       binary.mtx = "dgCMatrix",
-                      jaccard.mtx = "ANY",
+                      jaccard.mtx = "dgCMatrix",
                       clone.composition = "ANY",
                       clone.size.info = "ANY"))
 #' @export

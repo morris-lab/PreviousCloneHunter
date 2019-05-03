@@ -4,7 +4,7 @@
 \alias{CellTagObject}
 \title{Create a New CellTag Object}
 \usage{
-CellTagObject(object.name, fastq.bam.input, celltag.version)
+CellTagObject(object.name, fastq.bam.directory)
 }
 \arguments{
 \item{object.name}{The name of the object}

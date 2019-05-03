@@ -8,11 +8,20 @@ convertCellTagMatrix2LinkList <- function(celltag.obj){
   # celltag_data should be data frame (N x 3).
   # the columnname of this data frame should be c("CellTagV1", "CellTagV2", "CellTagV3")
   celltag.dt <- celltag.obj@clone.composition
+  v1.df <- as.data.frame(celltag.dt$v1)
+  v2.df <- as.data.frame(celltag.dt$v2)
+  v3.df <- as.data.frame(celltag.dt$v3)
+  rownames(v1.df) <- v1.df$cell.barcode
+  rownames(v2.df) <- v2.df$cell.barcode
+  rownames(v3.df) <- v3.df$cell.barcode
+
   all.cells <- unique(c(celltag.dt$v1$cell.barcode, celltag.dt$v2$cell.barcode, celltag.dt$v3$cell.barcode))
   celltag_data <- data.frame(row.names = all.cells)
-  celltag_data[celltag.dt$v1$cell.barcode, "CellTagV1"] <- celltag.dt$v1$clone.id
-  celltag_data[celltag.dt$v2$cell.barcode, "CellTagV2"] <- celltag.dt$v2$clone.id
-  celltag_data[celltag.dt$v3$cell.barcode, "CellTagV3"] <- celltag.dt$v3$clone.id
+  celltag_data[rownames(v1.df), "CellTagV1"] <- v1.df[rownames(v1.df),"clone.id"]
+  celltag_data[rownames(v2.df), "CellTagV2"] <- v2.df[rownames(v2.df),"clone.id"]
+  celltag_data[rownames(v3.df), "CellTagV3"] <- v3.df[rownames(v3.df),"clone.id"]
+  
+  celltag.obj@celltag.aggr.final <- celltag_data
   
   ### 1.Preprocessing celltag data #### 
   message("Preprocessing data..")
@@ -60,7 +69,7 @@ convertCellTagMatrix2LinkList <- function(celltag.obj){
     remaining_cells <- celltag_data[remaining_cell_id,]
     subcells <- remaining_cells[remaining_cells[,tag] != "e",]
     
-    tmp <- foreach(i = rownames(subcells), .combine = rbind) %do% {
+    tmp <- foreach(i = rownames(subcells), .combine = rbind, .packages="foreach") %do% {
       findRoot(i, tag)
     }
     linkList <- rbind(linkList, tmp)
@@ -70,7 +79,7 @@ convertCellTagMatrix2LinkList <- function(celltag.obj){
   
   
   # 2.2 hidden link ["CellTagV2" -> "CellTagV3"], or ["CellTagV1" -> "CellTagV3"]
-  hiddenlink_D13 <- foreach(i = (unique(celltag_data$CellTagV3)[-1]), .combine = rbind) %do% {
+  hiddenlink_D13 <- foreach(i = (unique(celltag_data$CellTagV3)[-1]), .combine = rbind, .packages="foreach") %do% {
     
     sub_cells <- celltag_data[celltag_data$CellTagV3 == i, ]
     
@@ -102,7 +111,7 @@ convertCellTagMatrix2LinkList <- function(celltag.obj){
     
   }
   # 2.3 hidden link ["CellTagV1" -> "CellTagV2"]
-  hiddenlink_D3 <- foreach(i = (unique(celltag_data$CellTagV2)[-1]), .combine = rbind) %do% {
+  hiddenlink_D3 <- foreach(i = (unique(celltag_data$CellTagV2)[-1]), .combine = rbind, .packages="foreach") %do% {
     
     sub_cells <- celltag_data[celltag_data$CellTagV2 == i, ]
     
@@ -147,14 +156,17 @@ convertCellTagMatrix2LinkList <- function(celltag.obj){
   linkList <- modifyCellName(linkList)
   
   message("finished")
-  return(linkList)
+  
+  celltag.obj@network.link.list <- linkList
+  return(celltag.obj)
   
 }
 
 
-getNodesfromLinkList <- function(linkList){
+getNodesfromLinkList <- function(celltag.obj){
   # This function construct Nodes list from linkList.
   # Use "convertCellTagMatrix2LinkList" function before running this function to get linkList.
+  linkList <- celltag.obj@network.link.list
   
   nodes <- union(linkList$target, linkList$source)
   Nodes <- data.frame(nodes, row.names = nodes, stringsAsFactors = F)
@@ -190,17 +202,24 @@ getNodesfromLinkList <- function(linkList){
   Nodes$tag <- sapply(nodes, refferTagid)
   Nodes$node_name_unmodified <- sapply(nodes, refferUMname)
   
-  return(Nodes)
+  celltag.obj@nodes <- Nodes
+  return(celltag.obj)
 }
 
 
-addData2Nodes <- function(Nodes, additional_data){
+addData2Nodes <- function(celltag.obj, additional_data){
   
   # Nodes: data frame
   # additional_data: data frame
   #
-  # the rownames of additional_data should be same format as "node_name_unmodified" in Nedes
+  # the rownames of additional_data should be same format as "node_name_unmodified" in Nodes
   
-  return(cbind(Nodes, additional_data[Nodes$node_name_unmodified,]))
+  Nodes <- celltag.obj@nodes
+  new.nodes <- cbind(Nodes, additional_data[Nodes$node_name_unmodified,])
+  no.col <- ncol(additional_data)
+  colnames(new.nodes)[(ncol(new.nodes)-1):ncol(new.nodes)] <- colnames(additional_data)
+  
+  celltag.obj@nodes <- new.nodes
+  return(celltag.obj)
 }
 

@@ -4,7 +4,7 @@
 \alias{CellTagExtraction}
 \title{CellTag Extraction Function}
 \usage{
-CellTagExtraction(celltag.obj)
+CellTagExtraction(celltag.obj, celltag.version)
 }
 \arguments{
 \item{celltag.obj}{A CellTag object initialized with path to the fastq/bam file}

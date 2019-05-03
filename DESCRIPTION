@@ -12,7 +12,10 @@ Depends: R (>= 3.5.0),
     data.table,
     plyr,
     reshape,
-    Matrix
+    Matrix,
+    tidyverse,
+    foreach,
+    networkD3
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true

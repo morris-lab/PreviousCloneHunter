@@ -50,6 +50,7 @@ CellTagDataPostCollapsing <- function(celltag.obj, collapsed.rslt.file) {
   collapsing <- celltag.obj@pre.starcode[[celltag.obj@curr.version]]
   colnames(collapsing)[c(1:2)] <- c("CellTag", "Cell.Barcode")
   new.collapsing.df <- collapsing
+  final.collapsing.df <- data.frame()
   # Process the collapsing data file
   for (i in 1:nrow(collapsed)) {
     curr.row <- collapsed[i,]
@@ -70,11 +71,23 @@ CellTagDataPostCollapsing <- function(celltag.obj, collapsed.rslt.file) {
           new.collapsing.df[ind, "Cell.Barcode"] <- collapsing[ind.cent[1], "Cell.Barcode"]
         }
       }
+      curr.centroid.sub <- new.collapsing.df[which(new.collapsing.df$concat == curr.centroid), ]
+      curr.count.new <- sum(curr.centroid.sub$value)
+      curr.new.row <- data.frame(concat = curr.centroid, CellTag = unique(curr.centroid.sub$CellTag), 
+                                 Cell.Barcode = unique(curr.centroid.sub$Cell.Barcode), value = curr.count.new,
+                                 stringsAsFactors = F)
+    } else {curr.new.row <- new.collapsing.df[which(new.collapsing.df$concat == curr.centroid), ]}
+    
+    if (nrow(final.collapsing.df) <= 0){
+      final.collapsing.df <- curr.new.row
+    } else {
+      final.collapsing.df <- rbind(final.collapsing.df, curr.new.row)
     }
   }
-  new.collapsing.df <- setDT(new.collapsing.df)
+  
+  final.collapsing.df <- setDT(final.collapsing.df)
   # Regenerate the new matrix
-  new.matrix <- dcast(new.collapsing.df, Cell.Barcode~CellTag)
+  new.matrix <- dcast(final.collapsing.df, Cell.Barcode~CellTag, fill = 0)
   # Give the matrix rownames
   cell.rnm <- new.matrix$Cell.Barcode
   cnms <- colnames(new.matrix)[2:ncol(new.matrix)]

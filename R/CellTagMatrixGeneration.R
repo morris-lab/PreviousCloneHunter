@@ -13,6 +13,8 @@ CellTagMatrixCount <- function(celltag.obj, barcodes.file) {
   # Read in the cell barcodes identified during alignment
   barcodeList <- fread(barcodes.file, header = FALSE)[[1]]
   celltagData <- celltag.obj@bam.parse.rslt[[celltag.obj@curr.version]]
+  # Filter based on filtered barcodes
+  celltagData <- celltagData[which(celltagData$Cell.BC %in% barcodeList), ]
   
   #With the parsed CellTag reads loaded we can then easily filter the data and generate UMI Counts for each Cell Barcode/Cell Tag combination.
   #-Groups the data.table by Cell Barcode/Cell Tag combination and creates a new column "UMI.Count" which has the number of unique UMI associated with each Cell Barcode/Cell.Tag combination. uniqueN is equivalent to length(unique(UMI))

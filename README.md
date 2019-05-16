@@ -18,6 +18,7 @@ library("CellTagR")
 ## Assessment of CellTag Library Complexity via Sequencing
 In the first section, we would like to evaluate the CellTag library complexity using sequencing. Following is an example using the sequencing data we generated in lab for pooled CellTag library V2. 
 ### 1. Read in the fastq sequencing data and extract the CellTags
+The extracted CellTag will be stored as attribute (fastq.full.celltag & fastq.only.celltag) in the result object.
 ```r
 # Read in data file that come with the package
 fpath <- system.file("extdata", "V2-1_R1.zip", package = "CloneHunter")
@@ -30,9 +31,6 @@ test.obj <- CellTagObject(object.name = "v2.whitelist.test", fastq.bam.directory
 # Extract the CellTags
 test.obj <- CellTagExtraction(celltag.obj = test.obj, celltag.version = "v2")
 ```
-The extracted CellTag will be stored as attribute (fastq.full.celltag & fastq.only.celltag) in the result object with the following format. 
-
-<<<<<<<<<<<<<<<<<<< ADD FORMAT HERE >>>>>>>>>>>>>>>>>>
 
 ### 2. Count the CellTags and sort based on occurrence of each CellTag
 ```r
@@ -204,3 +202,7 @@ bam.test.obj <- CloneCalling(celltag.obj = bam.test.obj, correlation.cutoff=0.7)
 bam.test.obj@clone.composition[["v1"]]
 bam.test.obj@clone.size.info[["v1"]]
 ```
+
+## Network Construction And Visualization
+
+

@@ -156,7 +156,9 @@ MetricPlots(bam.test.obj)
 ### 4. Apply the whitelisted CellTags generated from assessment
 Based on the whitelist generated earlier, we filter the UMI count matrix to contain only whitelisted CelTags for the current version under processing. The function takes in two inputs including the CellTag object with binarization performed and the path to the whitelist csv file. The whitelist result will be saved in a slot - "whitelisted.count".
 ```r
-bam.test.obj <- SingleCellDataWhitelist(bam.test.obj, "~/Desktop/CloneHunterTest/v1_whitelist.csv")
+# Read the RDS file and get the object
+dt.mtx.whitelist.path <- system.file("extdata", "v1_whitelist.csv", package = "CellTagR")
+bam.test.obj <- SingleCellDataWhitelist(bam.test.obj, dt.mtx.whitelist.path)
 ```
 
 ### 5. Check metric plots after whitelist filtering

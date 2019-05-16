@@ -1,5 +1,5 @@
 # R Package - CellTagR
-This is a wrapped package of the above workflow with additional checks on the Celltag Library sequences. This package have a dependency on R version (R >= 3.5.0). This can be used as an alternative approach for this pipeline.
+This is a wrapped R package of the workflow (https://github.com/morris-lab/CellTagWorkflow) with additional assessment of the complexity of the Celltag Library sequences. This package have a dependency on R version (R >= 3.5.0). This can be used as an alternative approach for this pipeline.
 
 (You might need to install devtools to be able to install from Github first)
 ```r
@@ -30,7 +30,9 @@ test.obj <- CellTagObject(object.name = "v2.whitelist.test", fastq.bam.directory
 # Extract the CellTags
 test.obj <- CellTagExtraction(celltag.obj = test.obj, celltag.version = "v2")
 ```
-The extracted CellTag will be stored as attribute (fastq.full.celltag & fastq.only.celltag) in the result object with the following format. <<<<<<<<<<<<<<<<<<<<<<<<< ADD FORMAT HERE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+The extracted CellTag will be stored as attribute (fastq.full.celltag & fastq.only.celltag) in the result object with the following format. 
+
+<<<<<<<<<<<<<<<<<<<<<<<<< ADD FORMAT HERE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 ### 2. Count the CellTags and sort based on occurrence of each CellTag
 ```r

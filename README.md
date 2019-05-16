@@ -98,6 +98,8 @@ dim(bam.test.obj@raw.count)
 The generated CellTag UMI count matrices can then be used in the following steps for clone identification.
 
 ## Single-cell CellTag UMI Count Matrix Processing
+##### Note: This filters the single-cell data based on the whitelist of CellTags one by one. By mean of that, if three CellTag libraries were used, the following commands need to be executed for 3 times and result matrices can be further joined (Example provided).
+
 In this section, we are presenting an alternative approach that utilizes this package that we established to carry out clone calling with single-cell CellTag UMI count matrices. In this pipeline below, we are using a subset dataset generated from the full data (Full data can be found here: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE99915). Briefly, in our lab, we reprogram mouse embryonic fibroblasts (MEFs) to induced endoderm progenitors (iEPs). This dataset is a single-cell dataset that contains cells collected from different time points during the process. This subset is a part of the first replicate of the data. It contains cells collected at Day 15 with three different CellTag libraries - V1, V2 & V3. 
 
 ### 1. Read in the single-cell CellTag UMI count matrix
@@ -136,84 +138,69 @@ head(bam.test.obj@collapsed.count)
 ```
 
 ### 2. Binarize the single-cell CellTag UMI count matrix
-Here we would like to binarize the count matrix to contain 0 or 1, where 0 indicates no such CellTag found in a single cell and 1 suggests the existence of such CellTag. The suggested cutoff that marks existence or absence is at least 2 counts per CellTag per Cell. For details, please refer to the paper - https://www.nature.com/articles/s41586-018-0744-4
+Here we would like to binarize the count matrix to contain 0 or 1, where 0 indicates no such CellTag found in a single cell and 1 suggests the existence of such CellTag. The suggested cutoff that marks existence or absence is at least 2 counts per CellTag per Cell. For details regarding to the cutoff choice, please refer to the paper - https://www.nature.com/articles/s41586-018-0744-4. The binary matrix will be stored in a slot - 'binary.mtx' - as a *dgCMatrix*. **Note: If collapsing was performed, binarization will based on the collapsed count matrix. Otherwise, it will be based on the raw count matrix**
 ```r
 # Calling binarization
-binary.sc.celltag <- SingleCellDataBinarization(sc.celltag, 2)
+bam.test.obj <- SingleCellDataBinatization(bam.test.obj, 2)
 ```
 
 ### 3. Metric plots to facilitate for additional filtering
 We then generate scatter plots for the number of total celltag counts in each cell and the number each tag across all cells. These plots could help us further in filtering and cleaning the data.
 ```r
-metric.p <- MetricPlots(celltag.data = binary.sc.celltag)
-print(paste0("Mean CellTags Per Cell: ", metric.p[[1]]))
-print(paste0("Mean CellTag Frequency across Cells: ", metric.p[[2]]))
+MetricPlots(bam.test.obj)
 ```
 
 ### 4. Apply the whitelisted CellTags generated from assessment
-##### Note: This filters the single-cell data based on the whitelist of CellTags one by one. By mean of that, if three CellTag libraries were used, the following commands need to be executed for 3 times and result matrices can be further joined (Example provided).
-
-Based on the whitelist generated earlier, we filter the UMI count matrix to contain only whitelisted CelTags.
+Based on the whitelist generated earlier, we filter the UMI count matrix to contain only whitelisted CelTags for the current version under processing. The function takes in two inputs including the CellTag object with binarization performed and the path to the whitelist csv file. The whitelist result will be saved in a slot - "whitelisted.count".
 ```r
-whitelist.sc.data.v2 <- SingleCellDataWhitelist(binary.sc.celltag, whitels.cell.tag.file = "./my_favourite_v2_1.csv")
+bam.test.obj <- SingleCellDataWhitelist(bam.test.obj, "~/Desktop/CloneHunterTest/v1_whitelist.csv")
 ```
-For all three CellTags,
-```r
-##########
-# Only run if this sample has been tagged with more than 1 CellTags libraries
-##########
-## NOT RUN
-whitelist.sc.data.v1 <- SingleCellDataWhitelist(binary.sc.celltag, whitels.cell.tag.file = "./my_favourite_v1.csv")
-whitelist.sc.data.v2 <- SingleCellDataWhitelist(binary.sc.celltag, whitels.cell.tag.file = "./my_favourite_v2_1.csv")
-whitelist.sc.data.v3 <- SingleCellDataWhitelist(binary.sc.celltag, whitels.cell.tag.file = "./my_favourite_v3.csv")
-```
-For each version of CellTag library, it should be processed through the following steps one by one to call clones for different pooled CellTag library.
 
 ### 5. Check metric plots after whitelist filtering
-Recheck the metric as similar as Step 3
+Recheck the metric similar to Step 3
 ```r
-metric.p2 <- MetricPlots(celltag.data = whitelist.sc.data.v2)
-print(paste0("Mean CellTags Per Cell: ", metric.p2[[1]]))
-print(paste0("Mean CellTag Frequency across Cells: ", metric.p2[[2]]))
+MetricPlots(bam.test.obj)
 ```
 
 ### 6. Additional filtering
 #### Filter out cells with more than 20 CellTags
 ```r
-metric.filter.sc.data <- MetricBasedFiltering(whitelisted.celltag.data = whitelist.sc.data.v2, cutoff = 20, comparison = "less")
+bam.test.obj <- MetricBasedFiltering(bam.test.obj, 20, comparison = "less")
 ```
 #### Filter out cells with less than 2 CellTags
 ```r
-metric.filter.sc.data.2 <- MetricBasedFiltering(whitelisted.celltag.data = metric.filter.sc.data, cutoff = 2, comparison = "greater")
+bam.test.obj <- MetricBasedFiltering(bam.test.obj, 2, comparison = "greater")
 ```
 ### 7. Last check of metric plots
 ```r
-metric.p3 <- MetricPlots(celltag.data = metric.filter.sc.data.2)
-print(paste0("Mean CellTags Per Cell: ", metric.p3[[1]]))
-print(paste0("Mean CellTag Frequency across Cells: ", metric.p3[[2]]))
+MetricPlots(bam.test.obj)
 ```
 If it looks good, proceed to the following steps to call the clones.
 
 ## Clone Calling
 ### 1. Jaccard Analysis
-This calculates pairwise Jaccard similarities among cells using the filtered CellTag UMI count matrix. This will generate a Jaccard similarity matrix and plot a correlation heatmap with cells ordered by hierarchical clustering. The matrix and plot will be saved in the current working directory.
+This calculates pairwise Jaccard similarities among cells using the filtered CellTag UMI count matrix. This function takes the CellTag object with metric filtering carried out. This will generate a Jaccard similarity matrix, which is saved as a part of the object in a slot - "jaccard.mtx". It also plots a correlation heatmap with cells ordered by hierarchical clustering. 
 ```r
-jac.mtx <- JaccardAnalysis(whitelisted.celltag.data = metric.filter.sc.data.2)
+bam.test.obj <- JaccardAnalysis(bam.test.obj)
 ```
 ### 2. Clone Calling
-Based on the Jaccard similarity matrix, we can call clones of cells. A clone will be selected if the correlations inside of the clones passes the cutoff given (here, 0.7 is used. It can be changed based on the heatmap/correlation matrix generated above). Using this part, a list containing the clonal identities of all cells and the count information for each clone. The tables will be saved in the given directory and filename.
+Based on the Jaccard similarity matrix, we can call clones of cells. A clone will be selected if the correlations inside of the clones passes the cutoff given (here, 0.7 is used. It can be changed based on the heatmap/correlation matrix generated above). Using this part, a list containing the clonal identities of all cells and the count information for each clone will be stored in the object in slots - "clone.composition" and "clone.size.info". 
 
-##### Clonal Identity Table `result[[1]]`
+##### Clonal Identity Table `clone.composition`
 
 |clone.id|cell.barcode|
 |:-------:|:------:|
 |Clonal ID|Cell BC |
 
-##### Count Table `result[[2]]`
+##### Count Table `clone.size.info`
 |Clone.ID|Frequency|
 |:------:|:-------:|
 |Clonal ID|The cell number in the clone|
 
 ```r
-Clone.result <- CloneCalling(Jaccard.Matrix = jac.mtx, output.dir = "./", output.filename = "clone_calling_result.csv", correlation.cutoff = 0.7)
+# Call clones
+bam.test.obj <- CloneCalling(celltag.obj = bam.test.obj, correlation.cutoff=0.7)
+# Check them out!!
+bam.test.obj@clone.composition[["v1"]]
+bam.test.obj@clone.size.info[["v1"]]
 ```

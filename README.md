@@ -8,7 +8,7 @@ install.packages("devtools")
 Install the package from GitHub.
 ```r
 library("devtools")
-devtools::install_github("morris-lab/CloneHunter")
+devtools::install_github("morris-lab/CellTagR")
 ```
 Load the package
 ```r
@@ -26,26 +26,24 @@ extract.dir <- "."
 unzip(fpath, overwrite = FALSE, exdir = ".")
 full.fpath <- paste0(extract.dir, "/", "V2-1_S2_L001_R1_001.fastq")
 # Set up the CellTag Object
-test.obj <- CellTagObject("test_object", fastq.bam.input = full.fpath, celltag.version = "v2")
+test.obj <- CellTagObject(object.name = "v2.whitelist.test", fastq.bam.directory = full.fpath)
 # Extract the CellTags
-test.obj <- CellTagExtraction(test.obj)
+test.obj <- CellTagExtraction(celltag.obj = test.obj, celltag.version = "v2")
 ```
-The extracted CellTag will be stored as attribute (fastq.full.celltag & fastq.only.celltag) in the result object with the following format.
-
-|First Vector-`extracted.cell.tags[[1]]`|Second Vector-`extracted.cell.tags[[1]]` |
-|:-------------------------------------:|:---------------------------------------:|
-|Full CellTag with conserved regions    |8nt CellTag region                       |
+The extracted CellTag will be stored as attribute (fastq.full.celltag & fastq.only.celltag) in the result object with the following format. <<<<<<<<<<<<<<<<<<<<<<<<< ADD FORMAT HERE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 ### 2. Count the CellTags and sort based on occurrence of each CellTag
 ```r
 # Count and Sort the CellTags in descending order of occurrence
 test.obj <- AddCellTagFreqSort(test.obj)
+# Check the stats
+test.obj@celltag.freq.stats
 ```
 
 ### 3. Generation of whitelist for this CellTag library
-Here are are generating the whitelist for this CellTag library - CellTag V2. This will remove the CellTags with an occurrence number below the threshold. The threshold (using 90th percentile as an example) is determined: floor[(90th quantile)/10]. The percentile can be changed while calling the function. Occurrence scatter plots are saved under the same directory as the fastq files with name as <CellTag Version Number>_whitelist.csv (Example: v2_whitelist.csv)
+Here are are generating the whitelist for this CellTag library - CellTag V2. This will remove the CellTags with an occurrence number below the threshold. The threshold (using 90th percentile as an example) is determined: floor[(90th quantile)/10]. The percentile can be changed while calling the function. A plot of CellTag reads will be plotted and it can be used to further choose the percentile. If the output directory is offered, whitelist files will be stored in the provided directory. Otherwise, whitelist files will be saved under the same directory as the fastq files with name as <CellTag Version Number>_whitelist.csv (Example: v2_whitelist.csv). 
 ```r
-test.obj <- CellTagWhitelistFiltering(test.obj, 0.9)
+test.obj <- CellTagWhitelistFiltering(celltag.obj = test.obj, percentile = 0.9, output.dir = NULL)
 ```
 The generated whitelist for each library can be used to filter and clean the single-cell CellTag UMI matrices.
 

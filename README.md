@@ -12,7 +12,7 @@ devtools::install_github("morris-lab/CellTagR")
 ```
 Load the package
 ```r
-library("CloneHunter")
+library("CellTagR")
 ```
 
 ## Assessment of CellTag Library Complexity via Sequencing
@@ -44,7 +44,9 @@ test.obj@celltag.freq.stats
 
 ### 3. Generation of whitelist for this CellTag library
 Here are are generating the whitelist for this CellTag library - CellTag V2. This will remove the CellTags with an occurrence number below the threshold. The threshold (using 90th percentile as an example) is determined: floor[(90th quantile)/10]. The percentile can be changed while calling the function. A plot of CellTag reads will be plotted and it can be used to further choose the percentile. If the output directory is offered, whitelist files will be stored in the provided directory. Otherwise, whitelist files will be saved under the same directory as the fastq files with name as <CellTag Version Number>_whitelist.csv (Example: v2_whitelist.csv). 
+
 ```r
+# Generate the whitelist
 test.obj <- CellTagWhitelistFiltering(celltag.obj = test.obj, percentile = 0.9, output.dir = NULL)
 ```
 The generated whitelist for each library can be used to filter and clean the single-cell CellTag UMI matrices.
@@ -87,6 +89,7 @@ In this step, we will quantify the CellTag UMI counts and generate the UMI count
 |Cell.BC|Motif 1|Motif 2|\<all tags detected\>|Motif N|
 
 ```r
+# Generate the sparse count matrix
 bam.test.obj <- CellTagMatrixCount(celltag.obj = bam.test.obj, barcodes.file = "./barcodes.tsv")
 # Check the dimension of the raw count matrix
 dim(bam.test.obj@raw.count)
@@ -95,21 +98,42 @@ dim(bam.test.obj@raw.count)
 The generated CellTag UMI count matrices can then be used in the following steps for clone identification.
 
 ## Single-cell CellTag UMI Count Matrix Processing
-In this section, we are presenting an alternative approach that utilizes this package that we established to carry out clone calling with single-cell CellTag UMI count matrices. In this pipeline below, we are using a subset dataset generated from the full data (Full data can be found here: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE99915). Briefly, in our lab, we reprogram mouse embryonic fibroblasts (MEFs) to induced endoderm progenitors (iEPs). This dataset is a single-cell dataset that contains cells collected from different time points during the process. This subset is a part of the first replicate of the data. It contains cells collected at Day 28 with three different CellTag libraries - V1, V2 & V3. 
+In this section, we are presenting an alternative approach that utilizes this package that we established to carry out clone calling with single-cell CellTag UMI count matrices. In this pipeline below, we are using a subset dataset generated from the full data (Full data can be found here: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE99915). Briefly, in our lab, we reprogram mouse embryonic fibroblasts (MEFs) to induced endoderm progenitors (iEPs). This dataset is a single-cell dataset that contains cells collected from different time points during the process. This subset is a part of the first replicate of the data. It contains cells collected at Day 15 with three different CellTag libraries - V1, V2 & V3. 
 
 ### 1. Read in the single-cell CellTag UMI count matrix
-These matrices can be obtained from the first part of this tutorial. In this pipeline below, the matrices were saved as .Rds files. It will need to be changed when saving the matrices into different data types.
+This object is what we have generated from the above steps using bam files. As mentioned before, bam files take a long time to process. Hence, in this repository, we include a sample object saved as .Rds file from the previous steps, in which raw count matrix is included in the slot - "raw.count"
 ```r
-# Read the RDS file
-dt.mtx.path <- system.file("extdata", "hf1.d28.prefiltered.Rds", package = "CloneHunter")
-sc.celltag <- readRDS(dt.mtx.path)
-# Change the rownames
-rnm <- sc.celltag$Cell.BC
-sc.celltag <- sc.celltag[,-1]
-rownames(sc.celltag) <- rnm
+# Read the RDS file and get the object
+dt.mtx.path <- system.file("extdata", "hf1.d15.demo.Rds", package = "CellTagR")
+bam.test.obj <- readRDS(dt.mtx.path)
 ```
 
-If CellTag error correction was not planned to be performed, move to the next step to carry out binarization and metric-based filtering. Otherwise, before binarization and additional filtering, please move on to the CellTag Error Correction section and come back to the binarization with the collapsed matrix, ```collapsed.mtx```.
+### (RECOMMENDED) Optional Step: CellTag Error Correction
+***NOTE:*** If CellTag error correction was **NOT** planned to be performed, skip this step and move to the *Step 2 - binarization*, in which the raw matrix will be used. Otherwise, before binarization and additional filtering, we will carry out the following error correction step via Starcode, from which collapsed matrix will be used further for binarization.
+
+In this step, we will identify CellTags with similar sequences and collapse similar CellTags to the centroid CellTag. For more information and installation, please refer to starcode software - https://github.com/gui11aume/starcode. Briefly, starcode clusters DNA sequences based on the Levenshtein distances between each pair of sequences, from which we collapse similar CellTag sequences to correct for potential errors occurred during single-cell RNA-sequencing process. Default maximum distance from starcode was used to cluster the CellTags.
+
+### I. Prepare for the data to be collapsed
+First, we will prepare the data to the format that could be accepted by starcode. This function accepts two inputs including the CellTag object with raw count matrix generated and a path to where to save the output text file. The output will be a text file with each line containing one sequence to collapse with others. In this function, we concatenate the CellTag with cell barcode and use the combined sequences as input to execute Starcode. The file to be used for Starcode will be stored under the provided directory.
+```r
+# Generating the collapsing file
+bam.test.obj <- CellTagDataForCollapsing(celltag.obj = bam.test.obj, output.file = "~/Desktop/collapsing.txt")
+```
+
+### II. Run Starcode to cluster the CellTag
+Following the instruction for Starcode, we will run the following command to generate the result from starcode.
+```r
+./starcode -s --print-clusters ~/Desktop/collapsing.txt > ~/Desktop/collapsing_result.txt
+```
+
+### III. Extract information from Starcode result and collapse similar CellTags
+With the collapsed results, we will regenerate the CellTag x Cell Barcode matrix. The collpased matrix will be stored in a slot - "collapsed.count" - in the CellTag object. This function takes two inputs including the CellTag Object to modify and the path to th result file from collapsing.
+```r
+# Recount and generate collapsed matrix
+bam.test.obj <- CellTagDataPostCollapsing(celltag.obj = bam.test.obj, collapsed.rslt.file = "~/Desktop/collapsing_rslt.txt")
+# Check the dimension of this collapsed count.
+head(bam.test.obj@collapsed.count)
+```
 
 ### 2. Binarize the single-cell CellTag UMI count matrix
 Here we would like to binarize the count matrix to contain 0 or 1, where 0 indicates no such CellTag found in a single cell and 1 suggests the existence of such CellTag. The suggested cutoff that marks existence or absence is at least 2 counts per CellTag per Cell. For details, please refer to the paper - https://www.nature.com/articles/s41586-018-0744-4

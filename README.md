@@ -217,29 +217,3 @@ Based on the Jaccard similarity matrix, we can call clones of cells. A clone wil
 ```r
 Clone.result <- CloneCalling(Jaccard.Matrix = jac.mtx, output.dir = "./", output.filename = "clone_calling_result.csv", correlation.cutoff = 0.7)
 ```
-
-## Optional: CellTag Error Correction
-In this step, we will identify CellTags with similar sequences and collapse similar CellTags to the centroid CellTag. For more information, please refer to starcode software - https://github.com/gui11aume/starcode. Briefly, starcode clusters DNA sequences based on the Levenshtein distances between each pair of sequences, from which we collapse similar CellTag sequences to correct for potential errors occurred during single-cell RNA-sequencing process. Default maximum distance from starcode was used to cluster the CellTags.
-
-### 1. Prepare for the data to be collapsed
-First, we will prepare the data to the format that could be accepted by starcode. This function accepts three inputs including the unfiltered single-cell data, the single-cell full UMI count matrix and the output csv file to save to. The output will be a data frame containing the CellTag information with their corresponding cell barcode and UMI counts. In this function, we concatenate the CellTag with cell barcode and use the combined sequences as input to execute Starcode. The file to be used for Starcode will be stored under the same directory as the output file and with the name provided and the suffix of "collapse.txt".
-```r
-# Expecting matrix with each column = a cell, each row = a celltag
-sc.celltag.t <- t(sc.celltag)
-colnames(sc.celltag.t) <- rownames(sc.celltag)
-# Generating the collapsing files
-collapse.df <- CellTagDataForCollapsing(sc.cell.tag, sc.celltag.t, "./my_favoriate.csv")
-```
-
-### 2. Run Starcode to cluster the CellTag
-Following the instruction for Starcode, we will run the following command to generate the result from starcode.
-```r
-./starcode -s --print-clusters ./my_favoriate_collapse.txt > ./collapsing_result.txt
-```
-
-### 3. Extract information from Starcode result and collapse similar CellTags
-With the collapsed results, we will regenerate the CellTag x Cell Barcode matrix. The output will be a matrix that contain the combined counts and collapsed CellTags. Also, the output will be saved under the output file directory given.
-```r
-collapsed.mtx <- CellTagDataPostCollapsing(sc.cell.tag, "./collapsing_result.txt", "./my_favoriate.csv", "./collapsed_matrix.RDS")
-```
-##### You can now use the collaped matrix to continue the single-cell data processing section (Step 2 - binarization and on) with the collapsed matrix.

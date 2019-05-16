@@ -32,7 +32,7 @@ test.obj <- CellTagExtraction(celltag.obj = test.obj, celltag.version = "v2")
 ```
 The extracted CellTag will be stored as attribute (fastq.full.celltag & fastq.only.celltag) in the result object with the following format. 
 
-<<<<<<<<<<<<<<<<<<<<<<<<< ADD FORMAT HERE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+<<<<<<<<<<<<<<<<<<< ADD FORMAT HERE >>>>>>>>>>>>>>>>>>
 
 ### 2. Count the CellTags and sort based on occurrence of each CellTag
 ```r

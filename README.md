@@ -96,7 +96,7 @@ dim(bam.test.obj@raw.count)
 The generated CellTag UMI count matrices can then be used in the following steps for clone identification.
 
 ## Single-cell CellTag UMI Count Matrix Processing
-##### Note: This filters the single-cell data based on the whitelist of CellTags one by one. By mean of that, if three CellTag libraries were used, the following commands need to be executed for 3 times and result matrices can be further joined (Example provided).
+***Note: The following tutorials for this section and Clone Calling section are only intended for ONE CellTag version. To obtain information for all three version of CellTags, it is required to run the following pipeline for each CellTag version independently, i.e. finishing process for V1 and then repeat the procedure for V2 and so on. By the end of running through the pipeline for various CellTag versions, the clonal information of each will be stored in the same object, which can be used to carry out network construction and visualization.***
 
 In this section, we are presenting an alternative approach that utilizes this package that we established to carry out clone calling with single-cell CellTag UMI count matrices. In this pipeline below, we are using a subset dataset generated from the full data (Full data can be found here: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE99915). Briefly, in our lab, we reprogram mouse embryonic fibroblasts (MEFs) to induced endoderm progenitors (iEPs). This dataset is a single-cell dataset that contains cells collected from different time points during the process. This subset is a part of the first replicate of the data. It contains cells collected at Day 15 with three different CellTag libraries - V1, V2 & V3. 
 

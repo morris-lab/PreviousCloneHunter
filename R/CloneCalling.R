@@ -1,6 +1,6 @@
 #' Jaccard Analysis Function
 #'
-#' This function conducts Jaccard analysis to calculate the Jaccard similarity between cells
+#' This function conducts Jaccard analysis to calculate the Jaccard similarity between cells.
 #' @param celltag.obj A CellTag object with the counts filtered based on metrics
 #' @param plot.corr Would you like to plot the correlation matrix?
 #' @return A CellTag object with attribute (jaccard.mtx) filled
@@ -26,7 +26,7 @@ JaccardAnalysis <- function(celltag.obj, plot.corr = TRUE) {
 
 #' Clone Calling Function
 #'
-#' This function conducts clone calling based on the Jaccard results
+#' This function conducts clone calling based on the Jaccard results.
 #' @param celltag.obj A CellTag object with the jaccard matrix generated
 #' @param correlation.cutoff Correlation cutoff for clone membership
 #' @return A CellTag object with attributes (clone.composition & clone.size.info) filled.

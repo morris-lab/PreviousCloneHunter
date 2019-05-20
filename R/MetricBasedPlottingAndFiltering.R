@@ -1,6 +1,6 @@
 #' Metric-Base Filtering Function
 #'
-#' This function applies further filtering on scRNA-seq data with CellTags based on cutoff values identified from the metric plots
+#' This function applies further filtering on scRNA-seq data with CellTags based on cutoff values identified from the metric plots.
 #' @param celltag.obj A CellTag Object with count matrix generated
 #' @param cutoff The cutoff decided from the metric plots
 #' @param comparison Would you like to maintain the part less than/greater than the cutoff? Default to less. Choices can be greater or less.
@@ -38,7 +38,7 @@ MetricBasedFiltering <- function(celltag.obj, cutoff, comparison = "less") {
 
 #' CellTag Metric Plotting Function
 #'
-#' This function provides some metric plots for further downstream celltag filtering in the scRNA-seq dataset
+#' This function provides some metric plots for further downstream celltag filtering in the scRNA-seq dataset.
 #' @param celltag.obj A CellTag Object
 #' @keywords single-cell RNA-seq data, CellTagging
 #' @export
@@ -64,8 +64,11 @@ MetricPlots <- function(celltag.obj) {
   CellTags.per.cell.avg <- mean(CellTags.per.cell.whitelisted.pf)
   CellTags.frequency.whitelisted.pf <- Matrix::colSums(celltag.data)
   CellTags.freq.avg <- mean(CellTags.frequency.whitelisted.pf)
-  plot(CellTags.per.cell.whitelisted.pf)
-  plot(CellTags.frequency.whitelisted.pf)
+  par(mfrow=c(2,2))
+  plot(CellTags.per.cell.whitelisted.pf, main = "CellTag Counts of Individual Cells", xlab = "Cell Index", ylab = "CellTag Counts")
+  plot(CellTags.frequency.whitelisted.pf, main = "CellTag Occurrence Frequency Across All Cells", xlab = "Cell Index", ylab = "CellTag Frequency")
+  hist(CellTags.per.cell.whitelisted.pf, main = "Histogram of CellTag Counts of Individual Cells", xlab = "CellTag Counts", ylab = "Count")
+  hist(CellTags.frequency.whitelisted.pf, main = "Histogram of CellTag Occurrence Frequency Across All Cells", xlab = "CellTag Occurrence Frequency", ylab = "Count")
   cat("Average: ", CellTags.per.cell.avg, "\n")
   cat("Frequency: ", CellTags.freq.avg, "\n")
 }

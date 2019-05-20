@@ -38,7 +38,18 @@ drawNetworkGraph <- function(linkList, Nodes, overlay){
   
 }
 
-
+#' Draw the Network
+#'
+#' This function generate a force-directed network based on the link list and nodes information. 
+#' @param celltag.obj A CellTag object with link list and nodes filled
+#' @param tag Which tags would you like to plot?
+#' @param overlay What information would you like to overlay with the network? This should be one of the column names of the node information.
+#' @return A CellTag object with the attribute (network) modified.
+#' @keywords single-cell RNA-seq data, CellTagging
+#' @export
+#' @examples
+#' drawSubnet(bam.test.obj, "CellTagV1_2", "Cluster")
+#' 
 drawSubnet <- function(celltag.obj, tag, overlay){
   # e.g. tag; "celltag2.1_698"
   # e.g. color: "cluster" or "tag" or "SuperClone"

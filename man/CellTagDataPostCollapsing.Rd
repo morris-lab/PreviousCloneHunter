@@ -7,22 +7,18 @@
 CellTagDataPostCollapsing(celltag.obj, collapsed.rslt.file)
 }
 \arguments{
+\item{celltag.obj}{A CellTag object with the pre-starcode mapping matrix filled.}
+
 \item{collapsed.rslt.file}{File path to the collapsed result file}
-
-\item{ctm.after.whitelist}{CellTag single-cell matrix after whitelist filtering}
-
-\item{collapsed.csv.file}{File path to the data frame file generated for collapsing}
-
-\item{output.file}{The RDS file path and name to save the resulting UMI matrix}
 }
 \value{
-The collapsed and processed UMI matrices
+A CellTag object with collapsed count matrix stored in collapsed.count slot
 }
 \description{
 This function processes the result generated from starcode - https://github.com/gui11aume/starcode.
 }
 \examples{
-CellTagDataPostCollapsing(celltags.whitelisted.3, "collapsed_test.txt", "collapsed.csv", "collapsed_data_matrix.Rds")
+CellTagDataPostCollapsing(bam.test.obj, "./collapsing_result.txt")
 
 }
 \keyword{CellTagging}

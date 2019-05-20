@@ -1,6 +1,6 @@
 #' Single-cell RNA-seq Binarization Function
 #'
-#' This function binarize the single-cell celltag data
+#' This function binarize the single-cell celltag data based on a given cutoff. It will generate a binary matrix, which will be stored as a slot in the CellTag Object. The binary matrix will be further used for future processing of the single-cell data.
 #' @param celltag.obj A CellTag object with the raw count matrix generated
 #' @param tag.cutoff How many tags would you like to be used as a cutoff to say that the cells are tagged?
 #' @return A CellTag object with the attribute (binary.mtx) filled.
@@ -25,7 +25,7 @@ SingleCellDataBinatization <- function(celltag.obj, tag.cutoff) {
 
 #' Single-cell RNA-seq Whitelisting Function
 #'
-#' This function conducts whitelist filtering through the single-cell dataset
+#' The whitelist is a list of CellTag generated based on assessment of CellTag library. It helps reduce the effect from sequencing error in CellTags. This function conducts whitelist filtering through the single-cell dataset. It will filter out CellTags that are not included in the whitelist.
 #' @param celltag.obj A CellTag object with the binary matrix generated
 #' @param whitels.cell.tag.file file director to the whitelisted cell tags
 #' @return A CellTag object with the attribute (whitelisted.count) filled

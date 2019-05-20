@@ -15,7 +15,7 @@ JaccardAnalysis(celltag.obj, plot.corr = TRUE)
 A CellTag object with attribute (jaccard.mtx) filled
 }
 \description{
-This function conducts Jaccard analysis to calculate the Jaccard similarity between cells
+This function conducts Jaccard analysis to calculate the Jaccard similarity between cells.
 }
 \examples{
 JaccardAnalysis(bam.test.obj)

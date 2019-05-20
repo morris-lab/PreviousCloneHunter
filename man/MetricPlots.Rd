@@ -10,7 +10,7 @@ MetricPlots(celltag.obj)
 \item{celltag.obj}{A CellTag Object}
 }
 \description{
-This function provides some metric plots for further downstream celltag filtering in the scRNA-seq dataset
+This function provides some metric plots for further downstream celltag filtering in the scRNA-seq dataset.
 }
 \examples{
 MetricPlots(bam.test.obj)

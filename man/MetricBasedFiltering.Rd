@@ -17,7 +17,7 @@ MetricBasedFiltering(celltag.obj, cutoff, comparison = "less")
 A CellTag Object with attribute (metric.filtered.count) filled
 }
 \description{
-This function applies further filtering on scRNA-seq data with CellTags based on cutoff values identified from the metric plots
+This function applies further filtering on scRNA-seq data with CellTags based on cutoff values identified from the metric plots.
 }
 \examples{
 MetricBasedFiltering(bam.test.object, 20, "less")

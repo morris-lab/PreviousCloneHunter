@@ -15,7 +15,7 @@ CloneCalling(celltag.obj, correlation.cutoff)
 A CellTag object with attributes (clone.composition & clone.size.info) filled.
 }
 \description{
-This function conducts clone calling based on the Jaccard results
+This function conducts clone calling based on the Jaccard results.
 }
 \examples{
 CloneCalling(bam.test.obj, 0.7)

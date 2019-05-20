@@ -1,9 +1,13 @@
-##  R functions for cellTag network construction and visualization ##
-# Please see tutorials as well.
-# updated at 2018, 11, 14
-#
-
-
+#' Convert CellTag Matrix to Link List
+#'
+#' This function convert the CellTag Matrix to a link list, which is further used for network construction and visualizetion
+#' @param celltag.obj A CellTag object with all clone information filled
+#' @return A CellTag object with the attribute (network.link.list) filled
+#' @keywords single-cell RNA-seq data, CellTagging
+#' @export
+#' @examples
+#' convertCellTagMatrix2LinkList(bam.test.obj)
+#' 
 convertCellTagMatrix2LinkList <- function(celltag.obj){
   # celltag_data should be data frame (N x 3).
   # the columnname of this data frame should be c("CellTagV1", "CellTagV2", "CellTagV3")
@@ -162,7 +166,16 @@ convertCellTagMatrix2LinkList <- function(celltag.obj){
   
 }
 
-
+#' Get Nodes from Link List
+#'
+#' This function extracts the node information from the generated link list.
+#' @param celltag.obj A CellTag object with link list filled
+#' @return A CellTag object with the attribute (nodes) filled
+#' @keywords single-cell RNA-seq data, CellTagging
+#' @export
+#' @examples
+#' getNodesfromLinkList(bam.test.obj)
+#' 
 getNodesfromLinkList <- function(celltag.obj){
   # This function construct Nodes list from linkList.
   # Use "convertCellTagMatrix2LinkList" function before running this function to get linkList.
@@ -206,7 +219,17 @@ getNodesfromLinkList <- function(celltag.obj){
   return(celltag.obj)
 }
 
-
+#' Add Additional Information to the Nodes
+#'
+#' This function add auxillary information to the nodes. Such information can include cluster information, cell type information and so on. The information should be stored as a data frame when passing in to the funtion.
+#' @param celltag.obj A CellTag object with nodes filled
+#' @param additional_data A data frame with auxillary information about the nodes (rownames = the nodes names)
+#' @return A CellTag object with the attribute (nodes) modified.
+#' @keywords single-cell RNA-seq data, CellTagging
+#' @export
+#' @examples
+#' addData2Nodes(bam.test.obj, cluster.info)
+#' 
 addData2Nodes <- function(celltag.obj, additional_data){
   
   # Nodes: data frame

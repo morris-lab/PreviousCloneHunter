@@ -15,7 +15,7 @@ SingleCellDataWhitelist(celltag.obj, whitels.cell.tag.file)
 A CellTag object with the attribute (whitelisted.count) filled
 }
 \description{
-This function conducts whitelist filtering through the single-cell dataset
+The whitelist is a list of CellTag generated based on assessment of CellTag library. It helps reduce the effect from sequencing error in CellTags. This function conducts whitelist filtering through the single-cell dataset. It will filter out CellTags that are not included in the whitelist.
 }
 \examples{
 SingleCellDataWhitelist(bam.test.obj, "~/Desktop/My_Favourite_Whitelist.csv")

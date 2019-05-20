@@ -15,7 +15,7 @@ SingleCellDataBinatization(celltag.obj, tag.cutoff)
 A CellTag object with the attribute (binary.mtx) filled.
 }
 \description{
-This function binarize the single-cell celltag data
+This function binarize the single-cell celltag data based on a given cutoff. It will generate a binary matrix, which will be stored as a slot in the CellTag Object. The binary matrix will be further used for future processing of the single-cell data.
 }
 \examples{
 SingleCellDataBinatization(bam.test.obj, 2)

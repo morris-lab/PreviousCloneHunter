@@ -7,20 +7,18 @@
 CellTagDataForCollapsing(celltag.obj, output.file)
 }
 \arguments{
-\item{output.file}{The filepath and name to save the table for collapsing}
+\item{celltag.obj}{A CellTag object with the raw count matrix filled.}
 
-\item{ctm.after.whitelist}{CellTag single-cell matrix after whitelist filtering}
-
-\item{umi.matrix}{CellTag raw UMI count matrix}
+\item{output.file}{The filepath and name to save the table for collapsing (usually a .txt file)}
 }
 \value{
-The data frame for collapsing
+A CellTag object with collapsing mapping table stored in pre.starcode slot
 }
 \description{
 This function generate the .txt file that will be fed into starcode - https://github.com/gui11aume/starcode - to collapse similar CellTags.
 }
 \examples{
-CellTagDataForCollapsing(celltags.whitelisted.3, combo.umi.mat.10, "my_favoriate_collapse.csv")
+CellTagDataForCollapsing(bam.test.obj, "./collapsing.txt")
 
 }
 \keyword{CellTagging}

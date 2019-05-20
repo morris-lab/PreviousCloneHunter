@@ -279,6 +279,10 @@ ggplot(data = bar.data) +
   scale_y_continuous(labels = scales::percent_format()) +
   theme_bw()
 ```
+Below is a sample bar chart!
+<p align="center">
+  <img src="/Exmples/bar_Chart.png" height="720" width="720">
+</p>
 
 ## Contact Us
 

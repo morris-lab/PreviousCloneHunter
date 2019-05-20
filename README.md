@@ -281,7 +281,7 @@ ggplot(data = bar.data) +
 ```
 Below is a sample bar chart!
 <p align="center">
-  <img src="/Exmples/bar_Chart.png" height="720" width="720">
+  <img src="/Exmples/bar_Chart.png" height="540" width="720">
 </p>
 
 ## Contact Us

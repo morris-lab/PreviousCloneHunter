@@ -152,6 +152,10 @@ We then generate scatter plots for the number of total celltag counts in each ce
 ```r
 MetricPlots(bam.test.obj)
 ```
+Below is an example plot that you could obtain from this object
+<p align="center">
+  <img src="/Exmples/pre_filtering.png" height="720" width="720">
+</p>
 
 ### 4. Apply the whitelisted CellTags generated from assessment
 Based on the whitelist generated earlier, we filter the UMI count matrix to contain only whitelisted CelTags for the current version under processing. The function takes in two inputs including the CellTag object with binarization performed and the path to the whitelist csv file. The whitelist result will be saved in a slot - "whitelisted.count".
@@ -180,6 +184,10 @@ bam.test.obj <- MetricBasedFiltering(bam.test.obj, 2, comparison = "greater")
 ```r
 MetricPlots(bam.test.obj)
 ```
+Example plot of last check!
+<p align="center">
+  <img src="/Exmples/post_filtering.png" height="720" width="720">
+</p>
 If it looks good, proceed to the following steps to call the clones.
 
 ### 8. Clone Calling

@@ -1,25 +1,18 @@
 #' CellTag Starcode Prior Collapsing
 #'
 #' This function generate the .txt file that will be fed into starcode - https://github.com/gui11aume/starcode - to collapse similar CellTags.
-#' @param ctm.after.whitelist CellTag single-cell matrix after whitelist filtering 
-#' @param umi.matrix CellTag raw UMI count matrix
-#' @param output.file The filepath and name to save the table for collapsing
-#' @return The data frame for collapsing
+#' @param celltag.obj A CellTag object with the raw count matrix filled.
+#' @param output.file The filepath and name to save the table for collapsing (usually a .txt file)
+#' @return A CellTag object with collapsing mapping table stored in pre.starcode slot
 #' @keywords single-cell RNA-seq data, CellTagging
 #' @export
 #' @examples
-#' CellTagDataForCollapsing(celltags.whitelisted.3, combo.umi.mat.10, "my_favoriate_collapse.csv")
+#' CellTagDataForCollapsing(bam.test.obj, "./collapsing.txt")
 #' 
-CellTagDataForCollapsing <- function(ctm.after.whitelist, umi.matrix, output.file) {
-  # Generate filenames for collapse txt
-  dirnm <- dirname(output.file)
-  bnm <- basename(output.file)
-  fnm.parts <- strsplit(bnm, "[.]")[[1]]
-  fnm <- fnm.parts[c(1:(length(fnm.parts) - 1))]
-  fn.txt <- paste0(dirnm, "/", paste(c(fnm, "collapse.txt"), collapse = "_"))
-  # Get the filtered CellTags and Cell Barcodes
-  filtered.names <- rownames(ctm.after.whitelist)
-  for.collapse <- as.matrix(umi.matrix[, filtered.names])
+CellTagDataForCollapsing <- function(celltag.obj, output.file) {
+  # Get the data out from the CellTag object
+  umi.matrix <- GetCellTagCurrentVersionWorkingMatrix(celltag.obj, "raw.count")
+  for.collapse <- t(as.matrix(umi.matrix))
   # Melt the matrix
   for.collapse <- melt(for.collapse)
   # Subset the matrix to only contain tags with positive UMI numbers
@@ -28,56 +21,76 @@ CellTagDataForCollapsing <- function(ctm.after.whitelist, umi.matrix, output.fil
   for.collapse$X2 <- as.character(for.collapse$X2)
   # Create the contatenation column
   for.collapse$concat <- paste0(for.collapse$X1, unlist(lapply(strsplit(for.collapse$X2, "-"), function(x) x[1])))
-  write.csv(for.collapse, output.file, row.names = F, quote = F)
-  print(fn.txt)
-  write.table(for.collapse$concat, fn.txt, sep = "\t", row.names = F, quote = F, col.names = F)
-  return(for.collapse)
+  write.table(for.collapse$concat, output.file, sep = "\t", row.names = F, quote = F, col.names = F)
+  # Set CellTag object
+  celltag.obj@pre.starcode[[celltag.obj@curr.version]] <- for.collapse
+  # Print the path saved
+  cat("The file for collapsing is stored at: ", output.file, "\n")
+  return(celltag.obj)
 }
 
 #' CellTag Starcode Post Collapsing
 #'
 #' This function processes the result generated from starcode - https://github.com/gui11aume/starcode.
-#' @param ctm.after.whitelist CellTag single-cell matrix after whitelist filtering 
+#' @param celltag.obj A CellTag object with the pre-starcode mapping matrix filled.
 #' @param collapsed.rslt.file File path to the collapsed result file
-#' @param collapsed.csv.file File path to the data frame file generated for collapsing
-#' @param output.file The RDS file path and name to save the resulting UMI matrix
-#' @return The collapsed and processed UMI matrices
+#' @return A CellTag object with collapsed count matrix stored in collapsed.count slot
 #' @keywords single-cell RNA-seq data, CellTagging
 #' @export
 #' @examples
-#' CellTagDataPostCollapsing(celltags.whitelisted.3, "collapsed_test.txt", "collapsed.csv", "collapsed_data_matrix.Rds")
+#' CellTagDataPostCollapsing(bam.test.obj, "./collapsing_result.txt")
 #' 
-CellTagDataPostCollapsing <- function(ctm.after.whitelist, collapsed.rslt.file, collapsed.csv.file, output.file) {
+CellTagDataPostCollapsing <- function(celltag.obj, collapsed.rslt.file) {
   # Read in the collpased result
   collapsed <- read.table(collapsed.rslt.file, sep = "\t", header = F, stringsAsFactors = F)
   # Read in the file for collapsing
-  collapsing <- read.csv(collapsed.csv.file, stringsAsFactors = F, header = T)
+  collapsing <- celltag.obj@pre.starcode[[celltag.obj@curr.version]]
   colnames(collapsing)[c(1:2)] <- c("CellTag", "Cell.Barcode")
   new.collapsing.df <- collapsing
+  final.collapsing.df <- data.frame()
   # Process the collapsing data file
   for (i in 1:nrow(collapsed)) {
     curr.row <- collapsed[i,]
     curr.centroid <- curr.row$V1
     curr.count <- curr.row$V2
+    curr.ct <- substring(curr.centroid, 1, 8)
     if (curr.count > 1) {
       curr.collapse.set <- strsplit(curr.row$V3, ",")[[1]]
       curr.to.collapse <- setdiff(curr.collapse.set, curr.centroid)
       for (j in 1:length(curr.to.collapse)) {
-        ind <- which(collapsing$concat == curr.to.collapse[j])
-        ind.cent <- which(collapsing$concat == curr.centroid)
-        new.collapsing.df[ind, "concat"] <- curr.centroid
-        new.collapsing.df[ind, "CellTag"] <- collapsing[ind.cent[1], "CellTag"]
-        new.collapsing.df[ind, "Cell.Barcode"] <- collapsing[ind.cent[1], "Cell.Barcode"]
+        curr.for.c <- curr.to.collapse[j]
+        curr.for.c.ct <- substring(curr.for.c, 1, 8)
+        if (curr.for.c.ct != curr.ct) {
+          ind <- which(collapsing$concat == curr.to.collapse[j])
+          ind.cent <- which(collapsing$concat == curr.centroid)
+          new.collapsing.df[ind, "concat"] <- curr.centroid
+          new.collapsing.df[ind, "CellTag"] <- collapsing[ind.cent[1], "CellTag"]
+          new.collapsing.df[ind, "Cell.Barcode"] <- collapsing[ind.cent[1], "Cell.Barcode"]
+        }
       }
+      curr.centroid.sub <- new.collapsing.df[which(new.collapsing.df$concat == curr.centroid), ]
+      curr.count.new <- sum(curr.centroid.sub$value)
+      curr.new.row <- data.frame(concat = curr.centroid, CellTag = unique(curr.centroid.sub$CellTag), 
+                                 Cell.Barcode = unique(curr.centroid.sub$Cell.Barcode), value = curr.count.new,
+                                 stringsAsFactors = F)
+    } else {curr.new.row <- new.collapsing.df[which(new.collapsing.df$concat == curr.centroid), ]}
+    
+    if (nrow(final.collapsing.df) <= 0){
+      final.collapsing.df <- curr.new.row
+    } else {
+      final.collapsing.df <- rbind(final.collapsing.df, curr.new.row)
     }
   }
+  
+  final.collapsing.df <- setDT(final.collapsing.df)
   # Regenerate the new matrix
-  new.matrix <- cast(new.collapsing.df, CellTag~Cell.Barcode)
+  new.matrix <- dcast(final.collapsing.df, Cell.Barcode~CellTag, fill = 0)
   # Give the matrix rownames
-  cell.tag.rnm <- new.matrix$CellTag
-  new.matrix <- new.matrix[,-1]
-  rownames(new.matrix) <- cell.tag.rnm
-  # Save the new matrix
-  saveRDS(new.matrix, output.file)
-  return(new.matrix)
+  cell.rnm <- new.matrix$Cell.Barcode
+  cnms <- colnames(new.matrix)[2:ncol(new.matrix)]
+  new.matrix <- as.matrix(new.matrix[, ..cnms])
+  rownames(new.matrix) <- cell.rnm
+  # Save the new matrix to the object
+  new.obj <- SetCellTagCurrentVersionWorkingMatrix(celltag.obj, "collapsed.count", as(new.matrix, "dgCMatrix"))
+  return(new.obj)
 }

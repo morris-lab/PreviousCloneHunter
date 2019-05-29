@@ -21,7 +21,8 @@ CellTagDataForCollapsing <- function(celltag.obj, output.file) {
   for.collapse$X2 <- as.character(for.collapse$X2)
   # Create the contatenation column
   for.collapse$concat <- paste0(for.collapse$X1, unlist(lapply(strsplit(for.collapse$X2, "-"), function(x) x[1])))
-  write.table(for.collapse$concat, output.file, sep = "\t", row.names = F, quote = F, col.names = F)
+  for.collapse.sub <- for.collapse[, c("concat", "value")]
+  write.table(for.collapse.sub, output.file, sep = "\t", row.names = F, quote = F, col.names = F)
   # Set CellTag object
   celltag.obj@pre.starcode[[celltag.obj@curr.version]] <- for.collapse
   # Print the path saved
@@ -53,8 +54,14 @@ CellTagDataPostCollapsing <- function(celltag.obj, collapsed.rslt.file) {
     curr.row <- collapsed[i,]
     curr.centroid <- curr.row$V1
     curr.count <- curr.row$V2
-    curr.ct <- substring(curr.centroid, 1, 8)
-    if (curr.count > 1) {
+    curr.collapse.set <- strsplit(curr.row$V3, ",")[[1]]
+    
+    # ind <- which(collapsing$concat == curr.centroid)
+    # 
+    # curr.new.row <- new.collapsing.df[ind, ]
+    # curr.new.row$value <- curr.count
+    
+    if (length(curr.collapse.set) > 1) {
       curr.collapse.set <- strsplit(curr.row$V3, ",")[[1]]
       curr.to.collapse <- setdiff(curr.collapse.set, curr.centroid)
       for (j in 1:length(curr.to.collapse)) {
@@ -70,11 +77,11 @@ CellTagDataPostCollapsing <- function(celltag.obj, collapsed.rslt.file) {
       }
       curr.centroid.sub <- new.collapsing.df[which(new.collapsing.df$concat == curr.centroid), ]
       curr.count.new <- sum(curr.centroid.sub$value)
-      curr.new.row <- data.frame(concat = curr.centroid, CellTag = unique(curr.centroid.sub$CellTag), 
+      curr.new.row <- data.frame(concat = curr.centroid, CellTag = unique(curr.centroid.sub$CellTag),
                                  Cell.Barcode = unique(curr.centroid.sub$Cell.Barcode), value = curr.count.new,
                                  stringsAsFactors = F)
     } else {curr.new.row <- new.collapsing.df[which(new.collapsing.df$concat == curr.centroid), ]}
-    
+
     if (nrow(final.collapsing.df) <= 0){
       final.collapsing.df <- curr.new.row
     } else {

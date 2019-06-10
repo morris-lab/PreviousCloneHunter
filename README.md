@@ -1,5 +1,5 @@
 # R Package - CloneHunter
-This is a wrapped package of the above workflow with additional checks on the Celltag Library sequences. This package have a dependency on R version (R >= 3.5.0). This can be used as an alternative approach for this pipeline.
+This is a wrapped package of the above workflow with additional checks on the Celltag Library sequences. This package have a dependency on R version (R >= 3.5.0). This can be used as an alternative approach for this pipeline. ***NOTE*** **This package has been updated to CellTagR. Please visit https://github.com/morris-lab/CellTagR to use the most up-to-date versio**
 
 (You might need to install devtools to be able to install from Github first)
 ```r
